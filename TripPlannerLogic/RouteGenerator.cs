@@ -8,5 +8,13 @@ namespace TripPlannerLogic
 {
     public class RouteGenerator
     {
+        public Route GetRoute(int startingPoint)
+        {
+            Route newRoute = new Route();
+
+            return newRoute;
+        }
     }
+
+
 }

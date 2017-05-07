@@ -40,8 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomContainer.cs" />
     <Compile Include="FileReader.cs" />
     <Compile Include="Params.cs" />
+    <Compile Include="PointValuePair.cs" />
+    <Compile Include="PointValuePairSortedSet.cs" />
     <Compile Include="Results.cs" />
     <Compile Include="Route.cs" />
     <Compile Include="RouteCalculator.cs" />

@@ -52,6 +52,8 @@
   <ItemGroup>
     <Compile Include="DistanceCalculatorsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteGeneratorTests.cs" />
+    <Compile Include="SortedSetsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TripPlannerLogic\TripPlannerLogic.csproj">
