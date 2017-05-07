@@ -14,26 +14,22 @@ namespace TripPlanner
 
         private RouteGenerator _routeGenerator = new RouteGenerator();
         private SolutionValidator _validator = new SolutionValidator();
+        private TripPlannerLogic.TripPlanner _tripPlanner = new TripPlannerLogic.TripPlanner();
         public MainWindow()
         {
             InitializeComponent();
             canvas.Children.Clear();
             Params.InitParams("F.txt");
             PlotAllPoints();
+            _tripPlanner.GenerateRoutes();
             for (int x = 0; x < Params.DaysOfTrip; x++)
             {
-                Route r = _routeGenerator.GetRoute(0);
-                RouteCalculator.CalculateRouteProfitAndLength(r);
-                Results.TotalLength += r.Length;
-                Results.TotalProfit += r.Profit;
-                Results.Solutions.Add(r);
-
-                Point[] points = new Point[r.Count];
-                for (int i = 0; i < r.Count; i++)
+                Point[] points = new Point[Results.Solutions[x].Count];
+                for (int i = 0; i < Results.Solutions[x].Count; i++)
                 {
-                    points[i] = new Point(Params.Coordinates[r[i], 0] / 2, Params.Coordinates[r[i], 1] / 2);
-                    Params.AvailablePoints.Remove(r[i]);
+                    points[i] = new Point(Params.Coordinates[Results.Solutions[x][i], 0] / 2, Params.Coordinates[Results.Solutions[x][i], 1] / 2);
                 }
+
                 if (x == 0)
                 {
                     DrawLine(points, Brushes.Red);
@@ -42,8 +38,10 @@ namespace TripPlanner
                 {
                     DrawLine(points, Brushes.Blue);
                 }
-                LBRoutes.Content += "Day: " + x + "\nLength: " + r.Length + " Profit " + r.Profit + "\n";
+                LBRoutes.Content += "Day: " + x + "\nLength: " + Results.Solutions[x].Length + " Profit " + Results.Solutions[x].Profit + "\n";
             }
+
+
             LBProfit.Content = Results.TotalProfit;
             LBLength.Content = Results.TotalLength;
             ValidateSolution();

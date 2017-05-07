@@ -25,6 +25,7 @@ namespace TripPlannerLogic
         {
             for (int day = 0; day < Params.DaysOfTrip; day++)
             {
+                Results.CurrentBestOne = new Route();
                 GenerateInitialPopulation();
                 for (int generation = 0; generation < _numberOfGenerations; generation++)
                 {
@@ -46,7 +47,8 @@ namespace TripPlannerLogic
             for (int i = 0; i < _populationSize; i++)
             {
                 int startingPoint = _rand.Next(Params.NumberOfPoints + 1);
-                _oldPopulation.Add(_routeGenerator.GetRoute(startingPoint));
+                Route newRoute = _routeGenerator.GetRoute(startingPoint);
+                _oldPopulation.Add(newRoute);
             }
         }
         private RouteSortedSet CreateNewPopulation()
@@ -61,6 +63,7 @@ namespace TripPlannerLogic
                     if (_chance < (1 - (i / 2 + j / 2) / 100))
                     {
                         Route newRoute = _routeCrossing.Cross(_oldPopulation[i], _oldPopulation[j]);
+
                         if (!_newPopulation.Contains(newRoute))
                         {
                             _newPopulation.Add(newRoute);

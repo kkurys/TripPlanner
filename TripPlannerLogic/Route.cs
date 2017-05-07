@@ -4,8 +4,8 @@ namespace TripPlannerLogic
 {
     public class Route
     {
-        public List<int> Points { get; set; }
-        public double Profit { get; set; }
+        public List<int> Points { get; set; } = new List<int>();
+        public double Profit { get; set; } = 0;
         public double Length { get; set; }
         public double Fitness
         {

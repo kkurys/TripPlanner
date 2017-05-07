@@ -25,8 +25,8 @@ namespace TripPlannerTests
             RouteGenerator generator = new RouteGenerator();
 
             var path1 = generator.GetRoute(0);
-            var path2 = generator.GetRoute(1);
-            var path3 = generator.GetRoute(2);
+            var path2 = generator.GetRoute(4);
+            var path3 = generator.GetRoute(5);
 
             Assert.AreEqual(true, path1.Contains(0));
             Assert.AreEqual(true, path2.Contains(0));

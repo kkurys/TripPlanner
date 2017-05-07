@@ -14,6 +14,7 @@ namespace TripPlannerLogic
             double _length = 0, _profit = 0;
 
             _newPath.Add(pStartingPoint);
+            _availableTowns.Remove(pStartingPoint);
             _profit += Params.Profits[pStartingPoint];
 
             do
@@ -39,7 +40,7 @@ namespace TripPlannerLogic
             ModifyPathToBeginWithCapital(ref _newPath);
 
             _newRoute.Points = _newPath;
-
+            RouteCalculator.CalculateRouteProfitAndLength(_newRoute);
             return _newRoute;
         }
         private PointValuePairSortedSet GetBestPointsForNextStep(int pCurrentPoint, int pFinalPoint, double pCurrentLength, HashSet<int> _availableTowns)
@@ -75,7 +76,7 @@ namespace TripPlannerLogic
             if (pPath.Contains(0) || pPath.Count == 1) return;
             int _bestInsertionPoint = -1;
             double _minimalDistanceGain = double.MaxValue;
-            for (int i = 1; i < pPath.Count - 1; i++)
+            for (int i = 1; i < pPath.Count - 2; i++)
             {
                 if (Params.Distances[i - 1, i] - Params.Distances[pPath[i - 1], 0] - Params.Distances[0, i] < _minimalDistanceGain)
                 {
