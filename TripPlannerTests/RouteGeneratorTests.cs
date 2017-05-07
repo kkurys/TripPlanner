@@ -7,6 +7,7 @@ namespace TripPlannerTests
     [TestClass]
     public class RouteGeneratorTests
     {
+
         [TestMethod]
         public void route_generator_returns_path_that_ends_and_starts_in_the_same_point()
         {
@@ -48,6 +49,5 @@ namespace TripPlannerTests
             Params.AvailablePoints = new HashSet<int>(new int[] { 1, 2, 3, 4, 5 });
             Params.MaxLength = 5;
         }
-
     }
 }

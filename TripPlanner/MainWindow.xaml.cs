@@ -12,16 +12,17 @@ namespace TripPlanner
     public partial class MainWindow : Window
     {
 
+        private RouteGenerator _routeGenerator = new RouteGenerator();
+        private SolutionValidator _validator = new SolutionValidator();
         public MainWindow()
         {
             InitializeComponent();
             canvas.Children.Clear();
             Params.InitParams("F.txt");
-            RouteGenerator routeGenerator = new RouteGenerator();
             PlotAllPoints();
             for (int x = 0; x < Params.DaysOfTrip; x++)
             {
-                Route r = routeGenerator.GetRoute(0);
+                Route r = _routeGenerator.GetRoute(0);
                 RouteCalculator.CalculateRouteProfitAndLength(r);
                 Results.TotalLength += r.Length;
                 Results.TotalProfit += r.Profit;
@@ -45,8 +46,54 @@ namespace TripPlanner
             }
             LBProfit.Content = Results.TotalProfit;
             LBLength.Content = Results.TotalLength;
+            ValidateSolution();
         }
 
+        private void ValidateSolution()
+        {
+            ValidateDuplicates();
+            ValidateLength();
+            ValidateProfit();
+        }
+        private void ValidateDuplicates()
+        {
+            if (!_validator.SolutionHasDuplicates())
+            {
+                LBDuplicatesStatus.Foreground = Brushes.Green;
+                LBDuplicatesStatus.Content = "OK";
+            }
+            else
+            {
+                LBDuplicatesStatus.Foreground = Brushes.Red;
+                LBDuplicatesStatus.Content = "ERROR";
+            }
+        }
+        private void ValidateLength()
+        {
+            if (!_validator.SolutionLengthIsWrong())
+            {
+                LBLengthStatus.Foreground = Brushes.Green;
+                LBLengthStatus.Content = "OK";
+            }
+            else
+            {
+                LBLengthStatus.Foreground = Brushes.Red;
+                LBLengthStatus.Content = "ERROR";
+            }
+        }
+        private void ValidateProfit()
+        {
+            if (!_validator.SolutionTotalProfitIsWrong())
+            {
+                LBProfitStatus.Foreground = Brushes.Green;
+                LBProfitStatus.Content = "OK";
+            }
+            else
+            {
+                LBProfitStatus.Foreground = Brushes.Red;
+                LBProfitStatus.Content = "ERROR";
+            }
+        }
         private void DrawLine(Point[] points, Brush color)
         {
             int i;
@@ -62,7 +109,7 @@ namespace TripPlanner
                 canvas.Children.Add(myline);
             }
         }
-        public void PlotAllPoints()
+        private void PlotAllPoints()
         {
             for (int i = 0; i < Params.NumberOfPoints + 1; i++)
             {

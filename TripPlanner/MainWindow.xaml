@@ -22,6 +22,8 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
@@ -41,6 +43,24 @@
             </Grid>
             <Grid Grid.Row="2" Grid.ColumnSpan="2">
                 <Label Name="LBRoutes"></Label>
+            </Grid>
+            <Grid Grid.Row="3" >
+                <Label Content="Duplicates: "></Label>
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="1">
+                <Label Name="LBDuplicatesStatus"></Label>
+            </Grid>
+            <Grid Grid.Row="4" >
+                <Label Content="Length: "></Label>
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Label Name="LBLengthStatus"></Label>
+            </Grid>
+            <Grid Grid.Row="5" >
+                <Label Content="Profit: "></Label>
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="1">
+                <Label Name="LBProfitStatus"></Label>
             </Grid>
         </Grid>
     </Grid>

@@ -38,6 +38,7 @@ namespace TripPlannerLogic
                 double.TryParse(t[1], NumberStyles.Any, CultureInfo.InvariantCulture, out coordinates[0, 1]);
                 points[0].X = coordinates[0, 0];
                 points[0].Y = coordinates[0, 1];
+                points[0].Profit = 0;
 
             }
             double[,] dist = new double[numberOfPoints + 1, numberOfPoints + 1];
