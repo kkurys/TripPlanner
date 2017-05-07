@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TripPlannerLogic
+﻿namespace TripPlannerLogic
 {
-    class RouteCalculator
+    public static class RouteCalculator
     {
+        public static void CalculateRouteProfitAndLength(Route pRoute)
+        {
+            for (int i = 0; i < pRoute.Count - 1; i++)
+            {
+                pRoute.Profit += Params.Profits[pRoute[i]];
+                pRoute.Length += Params.Distances[pRoute[i], pRoute[i + 1]];
+            }
+        }
     }
 }
