@@ -36,6 +36,7 @@ namespace TripPlannerLogic
             } while (_newPath[_newPath.Count - 1] != _newPath[0]);
 
             InsertCapital(ref _newPath);
+            ModifyPathToBeginWithCapital(ref _newPath);
 
             _newRoute.Points = _newPath;
 
@@ -51,7 +52,7 @@ namespace TripPlannerLogic
                 double value = CalculateValueBetweenPoints(pCurrentPoint, i, pFinalPoint, pCurrentLength);
                 if (value != -1)
                 {
-                    _bestPoints.Add(new Route(value, i));
+                    _bestPoints.Add(new PointValuePair(value, i));
                 }
             }
 
@@ -83,6 +84,20 @@ namespace TripPlannerLogic
                 }
             }
             pPath.Insert(_bestInsertionPoint, 0);
+        }
+        public void ModifyPathToBeginWithCapital(ref List<int> pPath)
+        {
+            if (pPath[0] == 0) return;
+            int i = 1;
+            for (i = 1; i < pPath.Count; i++)
+            {
+                pPath.Add(pPath[i]);
+                if (pPath[i] == 0)
+                {
+                    break;
+                }
+            }
+            pPath.RemoveRange(0, i);
         }
     }
 

@@ -14,6 +14,10 @@ namespace TripPlannerLogic
                 return _container[index];
             }
         }
+        public bool Contains(T item)
+        {
+            return _container.Contains(item);
+        }
         public int Count
         {
             get

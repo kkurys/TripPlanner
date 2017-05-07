@@ -49,5 +49,20 @@ namespace TripPlannerTests
             Params.AvailablePoints = new HashSet<int>(new int[] { 1, 2, 3, 4, 5 });
             Params.MaxLength = 5;
         }
+        [TestMethod]
+        public void route_gets_modified_so_it_starts_with_0()
+        {
+            RouteGenerator rg = new RouteGenerator();
+            List<int> route = new List<int>(new int[] { 1, 2, 3, 4, 0, 5, 1 });
+            rg.ModifyPathToBeginWithCapital(ref route);
+            Assert.AreEqual(7, route.Count);
+            CollectionAssert.AreEqual(new List<int>(new int[] { 0, 5, 1, 2, 3, 4, 0 }), route);
+
+            route = new List<int>(new int[] { 1, 0, 1 });
+            rg.ModifyPathToBeginWithCapital(ref route);
+            Assert.AreEqual(3, route.Count);
+            CollectionAssert.AreEqual(new List<int>(new int[] { 0, 1, 0 }), route);
+
+        }
     }
 }

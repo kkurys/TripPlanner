@@ -2,14 +2,14 @@
 
 namespace TripPlannerLogic
 {
-    public class PointValuePairSortedSet : CustomContainer<Route>
+    public class PointValuePairSortedSet : CustomContainer<PointValuePair>
     {
         public PointValuePairSortedSet(int pSize)
         {
             _size = pSize;
-            _container = new List<Route>();
+            _container = new List<PointValuePair>();
         }
-        public override void Add(Route item)
+        public override void Add(PointValuePair item)
         {
             if (_container.Count < _size)
             {

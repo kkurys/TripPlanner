@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TripPlannerLogic
+﻿namespace TripPlannerLogic
 {
-    class RouteCrossing
+    public class RouteCrossing
     {
+        public Route Cross(Route route1, Route route2)
+        {
+
+            return new Route();
+        }
     }
 }
