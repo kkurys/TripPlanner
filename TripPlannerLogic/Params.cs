@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TripPlannerLogic
+﻿namespace TripPlannerLogic
 {
-    class Params
+    public static class Params
     {
+        public static int MaxLength { get; set; }
+        public static int DaysOfTrip { get; set; }
+        public static int[] Profits { get; set; }
+        public static double Distances { get; set; }
+
     }
 }
