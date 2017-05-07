@@ -11,7 +11,7 @@ namespace TripPlannerLogic
         private RouteModificator _routeModificator;
         private Random _rand;
         private int _populationSize = 100;
-        private int _numberOfGenerations = 50;
+        private int _numberOfGenerations = 500;
 
         public TripPlanner()
         {
@@ -25,6 +25,7 @@ namespace TripPlannerLogic
         {
             for (int day = 0; day < Params.DaysOfTrip; day++)
             {
+                Results.DayOfTrip = day;
                 Results.CurrentBestOne = new Route();
                 GenerateInitialPopulation();
                 for (int generation = 0; generation < _numberOfGenerations; generation++)
@@ -40,6 +41,7 @@ namespace TripPlannerLogic
                 Results.TotalLength += Results.CurrentBestOne.Length;
                 Results.TotalProfit += Results.CurrentBestOne.Profit;
             }
+            Results.Notify();
         }
         private void GenerateInitialPopulation()
         {

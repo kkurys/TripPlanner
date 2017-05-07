@@ -33,11 +33,11 @@ namespace TripPlannerLogic
             }
             for (int i = _rightIndex; i < (route1.Count < route2.Count ? route2.Count : route1.Count); i++)
             {
-                if (i < route1.Count && !child1.Contains(route1[i]))
+                if (i < route1.Count && !child1.Contains(route1[i]) || i == route1.Count - 1)
                 {
                     child1.Add(route1[i]);
                 }
-                if (i < route2.Count && !child2.Contains(route2[i]))
+                if (i < route2.Count && !child2.Contains(route2[i]) || i == route2.Count - 1)
                 {
                     child2.Add(route2[i]);
                 }

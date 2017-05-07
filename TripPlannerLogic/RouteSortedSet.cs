@@ -33,6 +33,15 @@ namespace TripPlannerLogic
             if (item.Profit >= Results.CurrentBestOne.Profit && item.Length <= Params.MaxLength && item.Contains(0))
             {
                 Results.CurrentBestOne = item;
+                if (Results.Solutions.Count < Results.DayOfTrip + 1)
+                {
+                    Results.Solutions.Add(Results.CurrentBestOne);
+                }
+                else
+                {
+                    Results.Solutions[Results.DayOfTrip] = Results.CurrentBestOne;
+                }
+
             }
         }
     }

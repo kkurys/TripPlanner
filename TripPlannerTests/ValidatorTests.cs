@@ -23,7 +23,7 @@ namespace TripPlannerTests
             };
             Params.AvailablePoints = new HashSet<int>(new int[] { 1, 2, 3, 4, 5 });
             Params.MaxLength = 5;
-
+            Results.Solutions = new List<Route>();
             Route r1 = new Route();
             r1.Points = new List<int>();
             r1.Points.Add(0);
