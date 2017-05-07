@@ -17,5 +17,23 @@ namespace TripPlannerLogic
                     return (Profit * Profit * Profit / Length) * (Params.MaxLength * Profit / Length) * (Params.MaxLength * Profit / Length) * (Params.MaxLength / Length) * (Params.MaxLength / Length);
             }
         }
+        public int this[int index]
+        {
+            get
+            {
+                return Points[index];
+            }
+        }
+        public int Count
+        {
+            get
+            {
+                return Points.Count;
+            }
+        }
+        public bool Contains(int point)
+        {
+            return Points.Contains(point);
+        }
     }
 }
