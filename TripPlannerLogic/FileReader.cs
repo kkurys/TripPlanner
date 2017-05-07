@@ -7,8 +7,7 @@ namespace TripPlannerLogic
 {
     class FileReader
     {
-
-        public int[,] GetDataFromFile(string file, out int numberOfPoints, out int daysOfTrip, out int maxLength, out double[] profits)
+        public double[,] GetDataFromFile(string file, out int numberOfPoints, out int daysOfTrip, out int maxLength, out double[] profits, out double[,] coordinates)
         {
             List<RoutePoint> points = new List<RoutePoint>();
             points.Add(new RoutePoint(-1, -1, -1));
@@ -18,7 +17,10 @@ namespace TripPlannerLogic
                 numberOfPoints = Convert.ToInt32(t[0]);
                 daysOfTrip = Convert.ToInt32(t[1]);
                 maxLength = Convert.ToInt32(t[2]);
-                for (int i = 0; i < numberOfPoints + 1; i++)
+
+                coordinates = new double[numberOfPoints + 1, 2];
+
+                for (int i = 0; i < numberOfPoints; i++)
                 {
                     t = inFile.ReadLine().Split(' ');
                     double x, y, p;
@@ -26,16 +28,19 @@ namespace TripPlannerLogic
                     double.TryParse(t[1], NumberStyles.Any, CultureInfo.InvariantCulture, out y);
                     double.TryParse(t[2], NumberStyles.Any, CultureInfo.InvariantCulture, out p);
 
+                    coordinates[i + 1, 0] = x;
+                    coordinates[i + 1, 1] = y;
+
                     points.Add(new RoutePoint(x, y, p));
-                    if (i == numberOfPoints)
-                    {
-                        points[0].X = x;
-                        points[0].Y = y;
-                        points[0].Profit = p;
-                    }
                 }
+                t = inFile.ReadLine().Split(' ');
+                double.TryParse(t[0], NumberStyles.Any, CultureInfo.InvariantCulture, out coordinates[0, 0]);
+                double.TryParse(t[1], NumberStyles.Any, CultureInfo.InvariantCulture, out coordinates[0, 1]);
+                points[0].X = coordinates[0, 0];
+                points[0].Y = coordinates[0, 1];
+
             }
-            int[,] dist = new int[numberOfPoints + 1, numberOfPoints + 1];
+            double[,] dist = new double[numberOfPoints + 1, numberOfPoints + 1];
             profits = new double[numberOfPoints + 1];
             for (int i = 0; i < numberOfPoints + 1; i++)
             {

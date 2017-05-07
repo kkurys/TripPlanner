@@ -35,7 +35,7 @@ namespace TripPlannerTests
         public static void ClassInit(TestContext context)
         {
             Params.NumberOfPoints = 5;
-            Params.Profits = new int[6] { 0, 1, 2, 3, 4, 5 };
+            Params.Profits = new double[6] { 0, 1, 2, 3, 4, 5 };
             Params.Distances = new double[6, 6]
             {
                 {0, 1, 1, 1, 1, 1 },

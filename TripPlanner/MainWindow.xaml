@@ -5,8 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TripPlanner"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="600" Width="700">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Canvas Name="canvas">
+
+            </Canvas>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Label>Total Profit:</Label>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Label Name="LBProfit"></Label>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="0">
+                <Label>Total Length:</Label>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Label Name="LBLength"></Label>
+            </Grid>
+        </Grid>
     </Grid>
+
 </Window>
