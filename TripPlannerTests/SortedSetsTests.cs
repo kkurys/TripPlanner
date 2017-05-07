@@ -10,11 +10,11 @@ namespace TripPlannerTests
         public void point_value_set_is_being_correctly_sorted()
         {
             PointValuePairSortedSet set = new PointValuePairSortedSet(3);
-            PointValuePair p1 = new PointValuePair(-2, 5);
-            PointValuePair p2 = new PointValuePair(-1, 3);
-            PointValuePair p3 = new PointValuePair(15, 2);
-            PointValuePair p4 = new PointValuePair(10, 7);
-            PointValuePair p5 = new PointValuePair(16, 6);
+            Route p1 = new Route(-2, 5);
+            Route p2 = new Route(-1, 3);
+            Route p3 = new Route(15, 2);
+            Route p4 = new Route(10, 7);
+            Route p5 = new Route(16, 6);
 
             set.Add(p1);
             set.Add(p2);

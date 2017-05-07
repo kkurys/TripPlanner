@@ -51,7 +51,7 @@ namespace TripPlannerLogic
                 double value = CalculateValueBetweenPoints(pCurrentPoint, i, pFinalPoint, pCurrentLength);
                 if (value != -1)
                 {
-                    _bestPoints.Add(new PointValuePair(value, i));
+                    _bestPoints.Add(new Route(value, i));
                 }
             }
 

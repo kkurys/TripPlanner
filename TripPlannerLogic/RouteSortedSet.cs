@@ -2,9 +2,9 @@
 
 namespace TripPlannerLogic
 {
-    public class PointValuePairSortedSet : CustomContainer<Route>
+    public class RouteSortedSet : CustomContainer<Route>
     {
-        public PointValuePairSortedSet(int pSize)
+        public RouteSortedSet(int pSize)
         {
             _size = pSize;
             _container = new List<Route>();
@@ -15,7 +15,7 @@ namespace TripPlannerLogic
             {
                 _container.Add(item);
             }
-            else if (item.Value > _container[_size - 1].Value)
+            else if (item.Fitness > _container[_size - 1].Fitness)
             {
                 _container[_size - 1] = item;
             }
@@ -23,7 +23,7 @@ namespace TripPlannerLogic
 
             for (int i = _container.Count - 1; i > 0; i--)
             {
-                if (_container[i - 1].Value < _container[i].Value)
+                if (_container[i - 1].Fitness < _container[i].Fitness)
                 {
                     var tmp = _container[i];
                     _container[i] = _container[i - 1];

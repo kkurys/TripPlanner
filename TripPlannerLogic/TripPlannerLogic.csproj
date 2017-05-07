@@ -54,6 +54,8 @@
     <Compile Include="RouteModificator.cs" />
     <Compile Include="RouteOptimizator.cs" />
     <Compile Include="RoutePoint.cs" />
+    <Compile Include="RouteSet.cs" />
+    <Compile Include="RouteSortedSet.cs" />
     <Compile Include="SolutionValidators.cs" />
     <Compile Include="TripPlanner.cs" />
   </ItemGroup>
