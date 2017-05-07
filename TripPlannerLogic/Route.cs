@@ -14,7 +14,7 @@ namespace TripPlannerLogic
                 if (Length > 1.3 * Params.MaxLength)
                     return -1;
                 else
-                    return (Profit / Length) * (Params.MaxLength * Profit / Length);
+                    return (Profit / Length) * (Params.MaxLength * Profit / Length) * (Params.MaxLength * Profit / Length) * (Params.MaxLength / Length) * (Params.MaxLength / Length);
             }
         }
         public int this[int index]

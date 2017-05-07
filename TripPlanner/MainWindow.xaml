@@ -21,6 +21,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
@@ -37,6 +38,9 @@
             </Grid>
             <Grid Grid.Row="1" Grid.Column="1">
                 <Label Name="LBLength"></Label>
+            </Grid>
+            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                <Label Name="LBRoutes"></Label>
             </Grid>
         </Grid>
     </Grid>

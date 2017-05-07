@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using TripPlannerLogic;
@@ -17,6 +18,7 @@ namespace TripPlanner
             canvas.Children.Clear();
             Params.InitParams("F.txt");
             RouteGenerator routeGenerator = new RouteGenerator();
+            PlotAllPoints();
             for (int x = 0; x < Params.DaysOfTrip; x++)
             {
                 Route r = routeGenerator.GetRoute(0);
@@ -39,10 +41,10 @@ namespace TripPlanner
                 {
                     DrawLine(points, Brushes.Blue);
                 }
+                LBRoutes.Content += "Day: " + x + "\nLength: " + r.Length + " Profit " + r.Profit + "\n";
             }
             LBProfit.Content = Results.TotalProfit;
             LBLength.Content = Results.TotalLength;
-            //DrawLine2(points);
         }
 
         private void DrawLine(Point[] points, Brush color)
@@ -57,23 +59,30 @@ namespace TripPlanner
                 myline.Y1 = points[i].Y;
                 myline.X2 = points[i + 1].X;
                 myline.Y2 = points[i + 1].Y;
-                if (myline.X2 == 0 && myline.Y2 == 0) continue;
                 canvas.Children.Add(myline);
             }
         }
-
-        private void DrawLine2(Point[] points)
+        public void PlotAllPoints()
         {
-            Polyline line = new Polyline();
-            PointCollection collection = new PointCollection();
-            foreach (Point p in points)
+            for (int i = 0; i < Params.NumberOfPoints + 1; i++)
             {
-                collection.Add(p);
+                Ellipse e = new Ellipse();
+                e.Stroke = Brushes.Gray;
+                e.Fill = Brushes.Gray;
+                e.Height = 6;
+                e.Width = 6;
+                if (i == 0)
+                {
+                    e.Stroke = Brushes.Gold;
+                    e.Fill = Brushes.Gold;
+                    e.Height = 10;
+                    e.Width = 10;
+                }
+
+                canvas.Children.Add(e);
+                Canvas.SetTop(e, Params.Coordinates[i, 1] / 2 - e.Height / 2);
+                Canvas.SetLeft(e, Params.Coordinates[i, 0] / 2 - e.Width / 2);
             }
-            line.Points = collection;
-            line.Stroke = new SolidColorBrush(Colors.Black);
-            line.StrokeThickness = 1;
-            canvas.Children.Add(line);
         }
     }
 }
