@@ -15,19 +15,6 @@ namespace TripPlannerLogic
             set
             {
                 _bestOne = value;
-                Notify();
-            }
-        }
-        public static int DayOfTrip
-        {
-            get
-            {
-                return _dayOftrip;
-            }
-            set
-            {
-                _dayOftrip = value;
-                NotifyDay(_dayOftrip);
             }
         }
         public static List<Route> Solutions { get; set; }
@@ -35,13 +22,11 @@ namespace TripPlannerLogic
         public static double TotalLength { get; set; }
         public static HashSet<int> AvailablePoints { get; set; }
         public static Notify Notify;
-        public static NotifyDay NotifyDay;
         public static void Init()
         {
             _bestOne = new Route();
             TotalProfit = 0;
             TotalLength = 0;
-            DayOfTrip = 0;
             AvailablePoints = new HashSet<int>();
             Solutions = new List<Route>();
             for (int i = 0; i < Params.NumberOfPoints; i++)
@@ -52,6 +37,5 @@ namespace TripPlannerLogic
 
         }
     }
-    public delegate void Notify();
-    public delegate void NotifyDay(int day);
+    public delegate void Notify(Route route);
 }

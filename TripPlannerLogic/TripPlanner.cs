@@ -12,7 +12,7 @@ namespace TripPlannerLogic
         private RouteModificator _routeModificator;
         private Random _rand;
         private int _populationSize = 100;
-        private int _numberOfGenerations = 20;
+        private int _numberOfGenerations = 40;
 
         public TripPlanner()
         {
@@ -27,30 +27,46 @@ namespace TripPlannerLogic
             Results.Solutions = new List<Route>();
             for (int day = 0; day < Params.DaysOfTrip; day++)
             {
-                Results.DayOfTrip = day;
                 Results.CurrentBestOne = new Route();
                 GenerateInitialPopulation();
                 for (int generation = 0; generation < _numberOfGenerations; generation++)
                 {
                     _oldPopulation = CreateNewPopulation();
+                    if (generation % 2 == 0)
+                    {
+                        Results.Notify(_oldPopulation[0]);
+                    }
                 }
 
                 for (int z = 0; z < Results.CurrentBestOne.Count; z++)
                 {
                     Results.AvailablePoints.Remove(Results.CurrentBestOne[z]);
                 }
-                // Results.Solutions.Add(Results.CurrentBestOne);
+                Results.Solutions.Add(Results.CurrentBestOne);
+                _routeOptimizator.TwoOptimal(Results.CurrentBestOne, 0);
+                double profit = Results.CurrentBestOne.Profit;
+                double length = Results.CurrentBestOne.Length;
+                RouteCalculator.CalculateRouteProfitAndLength(Results.CurrentBestOne);
+                if (Results.CurrentBestOne.Profit != profit) throw new Exception("Profit error!");
+                if (Results.CurrentBestOne.Length != length) throw new Exception("Length error!");
+
                 Results.TotalLength += Results.CurrentBestOne.Length;
                 Results.TotalProfit += Results.CurrentBestOne.Profit;
+                Results.Notify(null);
             }
-            Results.Notify();
+            Results.Notify(null);
         }
         private void GenerateInitialPopulation()
         {
             _oldPopulation = new RouteSortedSet(_populationSize);
             for (int i = 0; i < _populationSize; i++)
             {
-                int startingPoint = _rand.Next(Params.NumberOfPoints + 1);
+                int startingPoint = _rand.Next(Results.AvailablePoints.Count + 1);
+                if (!Results.AvailablePoints.Contains(startingPoint))
+                {
+                    i--;
+                    continue;
+                }
                 Route newRoute = _routeGenerator.GetRoute(startingPoint);
                 _oldPopulation.Add(newRoute);
             }
@@ -67,7 +83,10 @@ namespace TripPlannerLogic
                     if (_chance < (1 - (i / 2 + j / 2) / 100))
                     {
                         Route newRoute = _routeCrossing.Cross(_oldPopulation[i], _oldPopulation[j]);
-
+                        double oldDist = newRoute.Length;
+                        _routeOptimizator.TwoOptimal(newRoute, 4);
+                        RouteCalculator.CalculateRouteProfitAndLength(newRoute);
+                        if (newRoute.Length > oldDist) throw new Exception("Nie bangla 2opt!");
                         if (!_newPopulation.Contains(newRoute))
                         {
                             _newPopulation.Add(newRoute);

@@ -17,39 +17,13 @@ namespace TripPlanner
         private RouteGenerator _routeGenerator = new RouteGenerator();
         private SolutionValidator _validator = new SolutionValidator();
         private TripPlannerLogic.TripPlanner _tripPlanner = new TripPlannerLogic.TripPlanner();
-        private int _dayOfTrip;
-        private Route _bestOne;
-        public int DayOfTrip
-        {
-            get
-            {
-                return _dayOfTrip;
-            }
-            set
-            {
-                _dayOfTrip = value;
-            }
-        }
-        public Route BestOne
-        {
-            get
-            {
-                return _bestOne;
-            }
-            set
-            {
-                _bestOne = value;
-                Plot();
-            }
-        }
         public MainWindow()
         {
             InitializeComponent();
             Params.InitParams("F.txt");
-            Results.NotifyDay += UpdateDayOfTrip;
+            PlotAllPoints();
             StartPlanner();
-            Results.Notify += Update;
-
+            Results.Notify += UpdateDisplay;
         }
 
         private void ValidateSolution()
@@ -134,14 +108,26 @@ namespace TripPlanner
                 Canvas.SetLeft(e, Params.Coordinates[i, 0] / 2 - e.Width / 2);
             }
         }
-        private void Plot()
+        private void Plot(Route currentRoute)
         {
             canvas.Children.Clear();
             PlotAllPoints();
             LBRoutes.Content = "";
             LBFullRoutes.Text = "";
-            if (Results.Solutions.Count == 0) return;
-            for (int x = 0; x < DayOfTrip; x++)
+            LBProfit.Content = Results.TotalProfit;
+            LBLength.Content = Results.TotalLength;
+            PlotCurrentSolutions();
+
+            if (currentRoute == null) return;
+            PlotRoute(Results.CurrentBestOne, -1);
+            PlotRoute(currentRoute, Results.Solutions.Count);
+
+
+        }
+
+        private void PlotCurrentSolutions()
+        {
+            for (int x = 0; x < Results.Solutions.Count; x++)
             {
                 Point[] points = new Point[Results.Solutions[x].Count];
                 LBFullRoutes.Text += "Day: " + x + ": ";
@@ -150,49 +136,37 @@ namespace TripPlanner
                     points[i] = new Point(Params.Coordinates[Results.Solutions[x][i], 0] / 2, Params.Coordinates[Results.Solutions[x][i], 1] / 2);
                     LBFullRoutes.Text += Results.Solutions[x][i].ToString() + " ";
                 }
+                DrawLine(points, GetColor(x));
 
-                if (x == 0)
-                {
-                    DrawLine(points, Brushes.Red);
-                }
-                else if (x == 1)
-                {
-                    DrawLine(points, Brushes.Blue);
-                }
                 LBRoutes.Content += "Day: " + x + "\nLength: " + Results.Solutions[x].Length + " Profit " + Results.Solutions[x].Profit + "\n";
                 LBFullRoutes.Text += "\n";
             }
-            if (DayOfTrip < Params.DaysOfTrip + 1)
-            {
-                Point[] pointsx = new Point[Results.CurrentBestOne.Count];
-                LBFullRoutes.Text += "Day: " + DayOfTrip + ": ";
-
-                for (int i = 0; i < Results.CurrentBestOne.Count; i++)
-                {
-                    pointsx[i] = new Point(Params.Coordinates[Results.CurrentBestOne[i], 0] / 2, Params.Coordinates[Results.CurrentBestOne[i], 1] / 2);
-                    LBFullRoutes.Text += Results.CurrentBestOne[i].ToString() + " ";
-                }
-                DrawLine(pointsx, Brushes.Blue);
-
-            }
-            LBRoutes.Content += "Day: " + DayOfTrip + "\nLength: " + Results.CurrentBestOne.Length + " Profit " + Results.CurrentBestOne.Profit + "\n";
-            LBProfit.Content = Results.TotalProfit;
-            LBLength.Content = Results.TotalLength;
-
         }
-        private void Update()
+        private void PlotRoute(Route route, int x)
+        {
+            Point[] points = new Point[route.Count];
+            if (x == -1)
+            {
+                LBRoutes.Content += "(CURRENT BEST)\nDay: " + Results.Solutions.Count + "\nLength: " + route.Length + " Profit " + route.Profit + "\n";
+            }
+            else
+            {
+                LBRoutes.Content += "(CURRENT)\nDay: " + Results.Solutions.Count + "\nLength: " + route.Length + " Profit " + route.Profit + "\n";
+            }
+            for (int i = 0; i < route.Count; i++)
+            {
+                points[i] = new Point(Params.Coordinates[route[i], 0] / 2, Params.Coordinates[route[i], 1] / 2);
+            }
+            DrawLine(points, GetColor(x));
+        }
+        private void UpdateDisplay(Route route)
         {
             App.Current.Dispatcher.Invoke((Action)delegate
             {
                 ValidateSolution();
-                Plot();
+                Plot(route);
             });
-            Thread.Sleep(200);
 
-        }
-        private void UpdateDayOfTrip(int d)
-        {
-            DayOfTrip = d;
         }
         private void StartPlanner()
         {
@@ -204,6 +178,28 @@ namespace TripPlanner
         private void RestartAlgorithm(object sender, RoutedEventArgs e)
         {
             StartPlanner();
+        }
+        private Brush GetColor(int x)
+        {
+            switch (x)
+            {
+                case 0:
+                    return Brushes.Red;
+                case 1:
+                    return Brushes.Blue;
+                case 2:
+                    return Brushes.Violet;
+                case 3:
+                    return Brushes.Violet;
+                case 4:
+                    return Brushes.Violet;
+                case -1:
+                    return Brushes.Goldenrod;
+                default:
+                    return Brushes.White;
+            }
+
+
         }
     }
 }
