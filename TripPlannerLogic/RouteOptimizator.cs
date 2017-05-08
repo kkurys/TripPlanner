@@ -34,6 +34,7 @@ namespace TripPlannerLogic
                 }
             } while (minChange < 0 && iterations < limit);
         }
+
         /*
         public List<int> modifyPath(List<int> path, int lT, int rT)
         {
@@ -59,7 +60,7 @@ namespace TripPlannerLogic
         {
             List<int> modifiedPath = new List<int>(path);
             int tmp;
-            lT++;
+            //lT++;
             while (lT < rT)
             {
                 tmp = modifiedPath[lT];

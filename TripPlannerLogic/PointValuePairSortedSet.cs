@@ -9,6 +9,13 @@ namespace TripPlannerLogic
             _size = pSize;
             _container = new List<PointValuePair>();
         }
+        public int Size
+        {
+            get
+            {
+                return _size;
+            }
+        }
         public override void Add(PointValuePair item)
         {
             if (_container.Count < _size)

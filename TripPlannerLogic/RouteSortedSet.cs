@@ -30,7 +30,11 @@ namespace TripPlannerLogic
                     _container[i - 1] = tmp;
                 }
             }
-            if ((item.Profit > Results.CurrentBestOne.Profit && item.Length <= Params.MaxLength || (item.Profit == Results.CurrentBestOne.Profit && item.Length < Results.CurrentBestOne.Length)) && item.Contains(0))
+            /*   if ((item.Profit > Results.CurrentBestOne.Profit && item.Length <= Params.MaxLength || (item.Profit == Results.CurrentBestOne.Profit && item.Length < Results.CurrentBestOne.Length && item.Length < Params.MaxLength) && item.Contains(0)))
+               {
+                   Results.CurrentBestOne = item;
+               } */
+            if (item.Profit >= Results.CurrentBestOne.Profit && item.Length <= Params.MaxLength && item.Contains(0))
             {
                 Results.CurrentBestOne = item;
             }

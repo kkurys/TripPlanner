@@ -36,10 +36,11 @@ namespace TripPlannerLogic
                 }
             } while (_newPath[_newPath.Count - 1] != _newPath[0]);
 
-            InsertCapital(ref _newPath);
-            ModifyPathToBeginWithCapital(ref _newPath);
-
             _newRoute.Points = _newPath;
+            RouteModificator rm = new RouteModificator(_newRoute);
+            rm.InsertCapital();
+            //  ModifyPathToBeginWithCapital(ref _newPath);
+
             RouteCalculator.CalculateRouteProfitAndLength(_newRoute);
             return _newRoute;
         }
@@ -64,42 +65,14 @@ namespace TripPlannerLogic
         {
             if (pCurrentLength + Params.Distances[pPreviousPoint, pCurrentPoint] + Params.Distances[pCurrentPoint, pFinalPoint] < Params.MaxLength)
             {
-                return (Params.Profits[pCurrentPoint]) / Params.Distances[pPreviousPoint, pCurrentPoint];
+                return (Params.Profits[pCurrentPoint]) * (Params.Profits[pCurrentPoint]) / Params.Distances[pPreviousPoint, pCurrentPoint];
             }
             else
             {
                 return -1;
             }
         }
-        private void InsertCapital(ref List<int> pPath)
-        {
-            if (pPath.Contains(0) || pPath.Count == 1) return;
-            int _bestInsertionPoint = -1;
-            double _minimalDistanceGain = double.MaxValue;
-            for (int i = 1; i < pPath.Count - 2; i++)
-            {
-                if (Params.Distances[i - 1, i] - Params.Distances[pPath[i - 1], 0] - Params.Distances[0, i] < _minimalDistanceGain)
-                {
-                    _bestInsertionPoint = i;
-                    _minimalDistanceGain = Params.Distances[i - 1, i] - Params.Distances[pPath[i - 1], 0] - Params.Distances[0, i];
-                }
-            }
-            pPath.Insert(_bestInsertionPoint, 0);
-        }
-        public void ModifyPathToBeginWithCapital(ref List<int> pPath)
-        {
-            if (pPath[0] == 0) return;
-            int i = 1;
-            for (i = 1; i < pPath.Count; i++)
-            {
-                pPath.Add(pPath[i]);
-                if (pPath[i] == 0)
-                {
-                    break;
-                }
-            }
-            pPath.RemoveRange(0, i);
-        }
+
     }
 
 

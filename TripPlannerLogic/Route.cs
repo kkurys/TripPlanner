@@ -14,7 +14,7 @@ namespace TripPlannerLogic
                 if (Length > 1.3 * Params.MaxLength)
                     return -1;
                 else
-                    return (Profit / Length) * (Params.MaxLength * Profit / Length) * (Params.MaxLength * Profit / Length) * (Params.MaxLength / Length) * (Params.MaxLength / Length);
+                    return (Profit * Profit) * (Params.MaxLength * Profit / Length) * (Params.MaxLength / Length) * (Params.MaxLength / Length);
             }
         }
         public int this[int index]
@@ -22,6 +22,10 @@ namespace TripPlannerLogic
             get
             {
                 return Points[index];
+            }
+            set
+            {
+                Points[index] = value;
             }
         }
         public int Count

@@ -20,7 +20,7 @@ namespace TripPlannerTests
             Assert.AreEqual(path2[0], path2[path2.Count - 1]);
         }
         [TestMethod]
-        public void route_generator_returns_path_containining_starting_point_with_0_index()
+        public void route_generator_returns_path_containining_starting_point_0()
         {
             RouteGenerator generator = new RouteGenerator();
 
@@ -52,16 +52,21 @@ namespace TripPlannerTests
         [TestMethod]
         public void route_gets_modified_so_it_starts_with_0()
         {
-            RouteGenerator rg = new RouteGenerator();
-            List<int> route = new List<int>(new int[] { 1, 2, 3, 4, 0, 5, 1 });
-            rg.ModifyPathToBeginWithCapital(ref route);
+            Route route = new Route();
+            RouteModificator rg;
+            List<int> route_path = new List<int>(new int[] { 1, 2, 3, 4, 0, 5, 1 });
+            route.Points = route_path;
+            rg = new RouteModificator(route);
+            rg.ModifyPathToBeginWithCapital();
             Assert.AreEqual(7, route.Count);
-            CollectionAssert.AreEqual(new List<int>(new int[] { 0, 5, 1, 2, 3, 4, 0 }), route);
+            CollectionAssert.AreEqual(new List<int>(new int[] { 0, 5, 1, 2, 3, 4, 0 }), route.Points);
 
-            route = new List<int>(new int[] { 1, 0, 1 });
-            rg.ModifyPathToBeginWithCapital(ref route);
+            route_path = new List<int>(new int[] { 1, 0, 1 });
+            route.Points = route_path;
+            rg = new RouteModificator(route);
+            rg.ModifyPathToBeginWithCapital();
             Assert.AreEqual(3, route.Count);
-            CollectionAssert.AreEqual(new List<int>(new int[] { 0, 1, 0 }), route);
+            CollectionAssert.AreEqual(new List<int>(new int[] { 0, 1, 0 }), route.Points);
 
         }
     }
