@@ -8,7 +8,7 @@ namespace TripPlannerLogic
         public Route GetRoute(int pStartingPoint)
         {
             Route _newRoute = new Route();
-            HashSet<int> _availableTowns = new HashSet<int>(Params.AvailablePoints);
+            HashSet<int> _availableTowns = new HashSet<int>(Results.AvailablePoints);
             List<int> _newPath = new List<int>();
             Random rand = new Random();
             double _length = 0, _profit = 0;

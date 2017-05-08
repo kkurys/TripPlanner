@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TripPlannerLogic
 {
@@ -11,7 +12,7 @@ namespace TripPlannerLogic
         private RouteModificator _routeModificator;
         private Random _rand;
         private int _populationSize = 100;
-        private int _numberOfGenerations = 500;
+        private int _numberOfGenerations = 20;
 
         public TripPlanner()
         {
@@ -23,6 +24,7 @@ namespace TripPlannerLogic
         }
         public void GenerateRoutes()
         {
+            Results.Solutions = new List<Route>();
             for (int day = 0; day < Params.DaysOfTrip; day++)
             {
                 Results.DayOfTrip = day;
@@ -35,9 +37,9 @@ namespace TripPlannerLogic
 
                 for (int z = 0; z < Results.CurrentBestOne.Count; z++)
                 {
-                    Params.AvailablePoints.Remove(Results.CurrentBestOne[z]);
+                    Results.AvailablePoints.Remove(Results.CurrentBestOne[z]);
                 }
-                Results.Solutions.Add(Results.CurrentBestOne);
+                // Results.Solutions.Add(Results.CurrentBestOne);
                 Results.TotalLength += Results.CurrentBestOne.Length;
                 Results.TotalProfit += Results.CurrentBestOne.Profit;
             }

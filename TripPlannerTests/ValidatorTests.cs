@@ -21,7 +21,7 @@ namespace TripPlannerTests
                 {1, 1, 1, 1, 0, 1 },
                 {1, 1, 1, 1, 1, 0 }
             };
-            Params.AvailablePoints = new HashSet<int>(new int[] { 1, 2, 3, 4, 5 });
+            Results.AvailablePoints = new HashSet<int>(new int[] { 1, 2, 3, 4, 5 });
             Params.MaxLength = 5;
             Results.Solutions = new List<Route>();
             Route r1 = new Route();
