@@ -1,31 +1,27 @@
-﻿using System;
+﻿using Genetic_V8;
+using System;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using TripPlannerLogic;
+
 
 namespace TripPlanner
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
-
-        private RouteGenerator _routeGenerator = new RouteGenerator();
-        private SolutionValidator _validator = new SolutionValidator();
-        private TripPlannerLogic.TripPlanner _tripPlanner = new TripPlannerLogic.TripPlanner();
+        TripPlannerOld _tripPlanner = new TripPlannerOld();
         public MainWindow()
         {
             InitializeComponent();
-            Params.InitParams("F.txt");
+            Parameters.GetParams("F.txt");
             PlotAllPoints();
             StartPlanner();
-            Results.Notify += UpdateDisplay;
+            Parameters.Notify += UpdateDisplay;
         }
-
+        /*
         private void ValidateSolution()
         {
             ValidateDuplicates();
@@ -70,7 +66,7 @@ namespace TripPlanner
                 LBProfitStatus.Foreground = Brushes.Red;
                 LBProfitStatus.Content = "ERROR";
             }
-        }
+        } */
         private void DrawLine(Point[] points, Brush color)
         {
             int i;
@@ -88,7 +84,7 @@ namespace TripPlanner
         }
         private void PlotAllPoints()
         {
-            for (int i = 0; i < Params.NumberOfPoints + 1; i++)
+            for (int i = 0; i < Parameters.numberOfTowns + 1; i++)
             {
                 Ellipse e = new Ellipse();
                 e.Stroke = Brushes.Gray;
@@ -104,73 +100,73 @@ namespace TripPlanner
                 }
 
                 canvas.Children.Add(e);
-                Canvas.SetTop(e, Params.Coordinates[i, 1] / 2 - e.Height / 2);
-                Canvas.SetLeft(e, Params.Coordinates[i, 0] / 2 - e.Width / 2);
+                Canvas.SetTop(e, Parameters.Coordinates[i, 1] / 2 - e.Height / 2);
+                Canvas.SetLeft(e, Parameters.Coordinates[i, 0] / 2 - e.Width / 2);
             }
         }
-        private void Plot(Route currentRoute)
+        private void Plot(Individual currentRoute)
         {
             canvas.Children.Clear();
             PlotAllPoints();
             LBRoutes.Content = "";
             LBFullRoutes.Text = "";
-            LBProfit.Content = Results.TotalProfit;
-            LBLength.Content = Results.TotalLength;
+            LBProfit.Content = Parameters.totalProfit;
+            LBLength.Content = Parameters.totalLength;
             PlotCurrentSolutions();
 
             if (currentRoute == null) return;
-            PlotRoute(Results.CurrentBestOne, -1);
-            PlotRoute(currentRoute, Results.Solutions.Count);
+            PlotRoute(Parameters.bestOne, -1);
+            PlotRoute(currentRoute, Parameters.solutions.Count);
 
 
         }
 
         private void PlotCurrentSolutions()
         {
-            for (int x = 0; x < Results.Solutions.Count; x++)
+            for (int x = 0; x < Parameters.solutions.Count; x++)
             {
-                Point[] points = new Point[Results.Solutions[x].Count];
+                Point[] points = new Point[Parameters.solutions[x].Count];
                 LBFullRoutes.Text += "Day: " + x + ": ";
-                for (int i = 0; i < Results.Solutions[x].Count; i++)
+                for (int i = 0; i < Parameters.solutions[x].Count; i++)
                 {
-                    points[i] = new Point(Params.Coordinates[Results.Solutions[x][i], 0] / 2, Params.Coordinates[Results.Solutions[x][i], 1] / 2);
-                    LBFullRoutes.Text += Results.Solutions[x][i].ToString() + " ";
+                    points[i] = new Point(Parameters.Coordinates[Parameters.solutions[x][i], 0] / 2, Parameters.Coordinates[Parameters.solutions[x][i], 1] / 2);
+                    LBFullRoutes.Text += Parameters.solutions[x][i].ToString() + " ";
                 }
                 DrawLine(points, GetColor(x));
 
-                LBRoutes.Content += "Day: " + x + "\nLength: " + Results.Solutions[x].Length + " Profit " + Results.Solutions[x].Profit + "\n";
+                LBRoutes.Content += "Day: " + x + "\nLength: " + Parameters.solutions[x].length + " Profit " + Parameters.solutions[x].profit + "\n";
                 LBFullRoutes.Text += "\n";
             }
         }
-        private void PlotRoute(Route route, int x)
+        private void PlotRoute(Individual route, int x)
         {
             Point[] points = new Point[route.Count];
             if (x == -1)
             {
-                LBRoutes.Content += "(CURRENT BEST)\nDay: " + Results.Solutions.Count + "\nLength: " + route.Length + " Profit " + route.Profit + "\n";
+                LBRoutes.Content += "(CURRENT BEST)\nDay: " + Parameters.solutions.Count + "\nLength: " + route.length + " Profit " + route.profit + "\n";
             }
             else
             {
-                LBRoutes.Content += "(CURRENT)\nDay: " + Results.Solutions.Count + "\nLength: " + route.Length + " Profit " + route.Profit + "\n";
+                LBRoutes.Content += "(CURRENT)\nDay: " + Parameters.solutions.Count + "\nLength: " + route.length + " Profit " + route.profit + "\n";
             }
             for (int i = 0; i < route.Count; i++)
             {
-                points[i] = new Point(Params.Coordinates[route[i], 0] / 2, Params.Coordinates[route[i], 1] / 2);
+                points[i] = new Point(Parameters.Coordinates[route[i], 0] / 2, Parameters.Coordinates[route[i], 1] / 2);
             }
             DrawLine(points, GetColor(x));
         }
-        private void UpdateDisplay(Route route)
+        private void UpdateDisplay(Individual route)
         {
             App.Current.Dispatcher.Invoke((Action)delegate
             {
-                ValidateSolution();
+                //  ValidateSolution();
                 Plot(route);
             });
 
         }
         private void StartPlanner()
         {
-            Results.Init();
+            Parameters.Init();
             Thread t = new Thread(() => _tripPlanner.GenerateRoutes());
             t.Start();
         }
