@@ -237,7 +237,20 @@ namespace Genetic_V8
                 profit += Parameters.profits[path[i]];
             }
         }
-
+        public void ModifyPathToBeginWithCapital()
+        {
+            if (path[0] == 0) return;
+            int i = 1;
+            for (i = 1; i < path.Count; i++)
+            {
+                path.Add(path[i]);
+                if (path[i] == 0)
+                {
+                    break;
+                }
+            }
+            path.RemoveRange(0, i);
+        }
 
         #region writing
         public void printIndividual()

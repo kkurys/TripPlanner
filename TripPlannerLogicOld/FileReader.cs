@@ -42,9 +42,9 @@ namespace Genetic_V8
             }
             int[,] dist = new int[numberOfTowns + 1, numberOfTowns + 1];
             profits = new double[numberOfTowns + 1];
-            for (int i = 1; i < numberOfTowns + 1; i++)
+            for (int i = 0; i < numberOfTowns + 1; i++)
             {
-                for (int j = 1; j < numberOfTowns + 1; j++)
+                for (int j = 0; j < numberOfTowns + 1; j++)
                 {
                     int distance = towns[i].calculateDistanceToOtherTown(towns[j]);
                     dist[i, j] = distance;

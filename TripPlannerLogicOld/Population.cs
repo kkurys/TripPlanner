@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using System.IO;
+using System.Linq;
 
 namespace Genetic_V8
 {
-    class Population :IEnumerable
+    class Population : IEnumerable
     {
         public ContainerForInds population;
         public double averagePopulationFitness = 0;
@@ -34,7 +30,7 @@ namespace Genetic_V8
         {
             population.Add(p);
             averagePopulationFitness = (averagePopulationFitness + p.fitness) / Count;
-            if (p.profit >= Parameters.bestOne.profit && p.length <= Parameters.maxLength)
+            if (p.profit >= Parameters.bestOne.profit && p.length <= Parameters.maxLength && p.path.Contains(0))
             {
                 Parameters.bestOne = p;
             }

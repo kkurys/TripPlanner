@@ -13,6 +13,7 @@ namespace TripPlanner
     public partial class MainWindow : Window
     {
         TripPlannerOld _tripPlanner = new TripPlannerOld();
+        SolutionValidator _validator = new SolutionValidator();
         public MainWindow()
         {
             InitializeComponent();
@@ -21,7 +22,7 @@ namespace TripPlanner
             StartPlanner();
             Parameters.Notify += UpdateDisplay;
         }
-        /*
+
         private void ValidateSolution()
         {
             ValidateDuplicates();
@@ -66,7 +67,7 @@ namespace TripPlanner
                 LBProfitStatus.Foreground = Brushes.Red;
                 LBProfitStatus.Content = "ERROR";
             }
-        } */
+        }
         private void DrawLine(Point[] points, Brush color)
         {
             int i;
@@ -89,8 +90,8 @@ namespace TripPlanner
                 Ellipse e = new Ellipse();
                 e.Stroke = Brushes.Gray;
                 e.Fill = Brushes.Gray;
-                e.Height = 6;
-                e.Width = 6;
+                e.Height = 12 * Parameters.profits[i] / 100;
+                e.Width = 12 * Parameters.profits[i] / 100;
                 if (i == 0)
                 {
                     e.Stroke = Brushes.Gold;
@@ -159,7 +160,7 @@ namespace TripPlanner
         {
             App.Current.Dispatcher.Invoke((Action)delegate
             {
-                //  ValidateSolution();
+                ValidateSolution();
                 Plot(route);
             });
 

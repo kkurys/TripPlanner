@@ -39,7 +39,7 @@ namespace Genetic_V8
                     I.generateFixedIndividual(startingTown, usedTowns);
                     oldPopulation.Add(I);
                 }
-                for (int generation = 0; generation < 30; generation++)
+                for (int generation = 0; generation < 60; generation++)
                 {
                     newPopulation = new Population(populationSize);
                     for (int i = 0; i < populationSize; i++)
@@ -49,18 +49,27 @@ namespace Genetic_V8
                         {
                             if (chance < (1 - (i / 2 + j / 2) / populationSize))
                             {
-                                I = breed.crossOver(oldPopulation[i], oldPopulation[j], usedTowns);
-                                if (!newPopulation.population.Contains(I))
-                                    newPopulation.Add(I);
+                                if (i < oldPopulation.Count && j < oldPopulation.Count)
+                                {
+                                    I = breed.crossOver(oldPopulation[i], oldPopulation[j], usedTowns);
+                                    if (!newPopulation.population.Contains(I))
+                                        newPopulation.Add(I);
+                                }
+
                             }
 
                         }
                     }
                     oldPopulation = newPopulation;
-                    Parameters.Notify(oldPopulation[0]);
+                    if (oldPopulation.Count > 0)
+                    {
+                        Parameters.Notify(oldPopulation[0]);
+                    }
+
                 }
                 Parameters.totalProfit += Parameters.bestOne.profit;
                 Parameters.totalLength += Parameters.bestOne.length;
+                Parameters.bestOne.ModifyPathToBeginWithCapital();
                 Parameters.solutions.Add(Parameters.bestOne);
                 for (int k = 0; k < Parameters.bestOne.path.Count; k++)
                 {
