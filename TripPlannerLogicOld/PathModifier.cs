@@ -18,7 +18,7 @@ namespace Genetic_V8
                 availableTowns.Remove(k);
             }
             PathCalculator PO = new PathCalculator();
-            int currentPathLength = PO.calculateDistance(currentPath);
+            double currentPathLength = PO.calculateDistance(currentPath);
             double currentProfit = 0;
             foreach (int i in currentPath)
             {
@@ -28,7 +28,7 @@ namespace Genetic_V8
             double bestPossibleGain = 0;
             int bestPossibleGainIndex = -1;
             int bestPossibleGainTown = -1;
-            int bestPossibleGainLengthInc = 0;
+            double bestPossibleGainLengthInc = 0;
             int iterations = 0;
             do
             {
@@ -40,14 +40,15 @@ namespace Genetic_V8
                 {
                     for (int x = 0; x < currentPath.Count - 1; x++)
                     {
-                        if (currentPathLength + Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]] <= Parameters.maxLength)
+                        double dist = Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]];
+                        if (currentPathLength + dist <= Parameters.maxLength)
                         {
 
-                            if (Parameters.profits[i] > bestPossibleGain)
+                            if (Parameters.profits[i] * Parameters.profits[i] * Parameters.profits[i] / (currentPathLength + dist) * Parameters.maxLength / (currentPathLength + dist) > bestPossibleGain)
                             {
 
                                 bestPossibleGainLengthInc = Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]];
-                                bestPossibleGain = Parameters.profits[i];
+                                bestPossibleGain = Parameters.profits[i] * Parameters.profits[i] * Parameters.profits[i] / (currentPathLength + dist) * Parameters.maxLength / (currentPathLength + dist);
                                 bestPossibleGainIndex = x;
                                 bestPossibleGainTown = i;
                             }
@@ -62,9 +63,23 @@ namespace Genetic_V8
                     currentPathLength = PO.calculateDistance(currentPath);
                 }
 
-            } while (bestPossibleGain != 0 && currentPathLength <= Parameters.maxLength && iterations < 1);
+            } while (bestPossibleGain != 0 && currentPathLength <= Parameters.maxLength && iterations < Parameters.rand.Next(1));
 
             return currentPath;
+        }
+
+        internal static void tryInverting(Individual child)
+        {
+            int startIdx = Parameters.rand.Next(2, child.Count - 2);
+            int side = Parameters.rand.Next();
+            if (side % 2 == 0)
+            {
+                child.path = child.modifyPath(child.path, startIdx, child.Count - 2);
+            }
+            else
+            {
+                child.path = child.modifyPath(child.path, 1, startIdx);
+            }
         }
         #endregion
         #region tryswapping
@@ -79,7 +94,7 @@ namespace Genetic_V8
             PathCalculator PO = new PathCalculator();
             List<int> added = new List<int>();
             List<int> removed = new List<int>();
-            int currentPathLength = PO.calculateDistance(currentPath);
+            double currentPathLength = PO.calculateDistance(currentPath);
             double currentProfit = 0;
 
             foreach (int i in currentPath)
@@ -169,14 +184,14 @@ namespace Genetic_V8
             PathCalculator calc = new PathCalculator();
             double bestPathProfit;
             double newProfit = 0;
-            int bestPathDist;
+            double bestPathDist;
             evaluatePath(bestPath, out bestPathDist, out bestPathProfit);
             for (int i = 1; i < bestPath.Count - 2; i++)
             {
                 for (int j = 1; j < bestPath.Count - 3; j++)
                 {
                     if (i == j) continue;
-                    int newDist = bestPathDist;
+                    double newDist = bestPathDist;
                     newProfit = 0;
 
                     if (j == i + 1)
@@ -266,6 +281,7 @@ namespace Genetic_V8
             }
             int maxValueTown = 0;
             double maxValueProfit = 0;
+
             for (int i = 0; i < availableTowns.Count; i++)
             {
                 if (Parameters.profits[availableTowns[i]] > maxValueProfit)
@@ -274,12 +290,14 @@ namespace Genetic_V8
                     maxValueProfit = Parameters.profits[availableTowns[i]];
                 }
             }
+
             int z = Parameters.rand.Next(I.Count - 2) + 2;
 
+            //   I.path[z] = availableTowns[Parameters.rand.Next(availableTowns.Count - 1)];
             I.path[z] = availableTowns[maxValueTown];
 
         }
-        public static void evaluatePath(List<int> path, out int length, out double profit)
+        public static void evaluatePath(List<int> path, out double length, out double profit)
         {
             length = 0;
             profit = 0;

@@ -17,7 +17,7 @@ namespace TripPlanner
         public MainWindow()
         {
             InitializeComponent();
-            Parameters.GetParams("F.txt");
+            Parameters.GetParams("grafy_v9_test.txt");
             PlotAllPoints();
             StartPlanner();
             Parameters.Notify += UpdateDisplay;
@@ -90,8 +90,8 @@ namespace TripPlanner
                 Ellipse e = new Ellipse();
                 e.Stroke = Brushes.Gray;
                 e.Fill = Brushes.Gray;
-                e.Height = 12 * Parameters.profits[i] / 100;
-                e.Width = 12 * Parameters.profits[i] / 100;
+                e.Height = 12 * Parameters.profits[i] / 5;
+                e.Width = 12 * Parameters.profits[i] / 5;
                 if (i == 0)
                 {
                     e.Stroke = Brushes.Gold;
@@ -101,8 +101,10 @@ namespace TripPlanner
                 }
 
                 canvas.Children.Add(e);
-                Canvas.SetTop(e, Parameters.Coordinates[i, 1] / 2 - e.Height / 2);
-                Canvas.SetLeft(e, Parameters.Coordinates[i, 0] / 2 - e.Width / 2);
+                //Canvas.SetTop(e, Parameters.Coordinates[i, 1] / 2 - e.Height / 2);
+                //Canvas.SetLeft(e, Parameters.Coordinates[i, 0] / 2 - e.Width / 2);
+                Canvas.SetTop(e, Parameters.Coordinates[i, 1] * 10 - e.Height / 2);
+                Canvas.SetLeft(e, Parameters.Coordinates[i, 0] * 10 - e.Width / 2);
             }
         }
         private void Plot(Individual currentRoute)
@@ -130,7 +132,9 @@ namespace TripPlanner
                 LBFullRoutes.Text += "Day: " + x + ": ";
                 for (int i = 0; i < Parameters.solutions[x].Count; i++)
                 {
-                    points[i] = new Point(Parameters.Coordinates[Parameters.solutions[x][i], 0] / 2, Parameters.Coordinates[Parameters.solutions[x][i], 1] / 2);
+                    //     points[i] = new Point(Parameters.Coordinates[Parameters.solutions[x][i], 0] / 2, Parameters.Coordinates[Parameters.solutions[x][i], 1] / 2);
+                   points[i] = new Point(Parameters.Coordinates[Parameters.solutions[x][i], 0] * 100, Parameters.Coordinates[Parameters.solutions[x][i], 1] * 100);
+
                     LBFullRoutes.Text += Parameters.solutions[x][i].ToString() + " ";
                 }
                 DrawLine(points, GetColor(x));
@@ -152,7 +156,8 @@ namespace TripPlanner
             }
             for (int i = 0; i < route.Count; i++)
             {
-                points[i] = new Point(Parameters.Coordinates[route[i], 0] / 2, Parameters.Coordinates[route[i], 1] / 2);
+                //points[i] = new Point(Parameters.Coordinates[route[i], 0] / 2, Parameters.Coordinates[route[i], 1] / 2);
+                points[i] = new Point(Parameters.Coordinates[route[i], 0] * 100, Parameters.Coordinates[route[i], 1] * 100);
             }
             DrawLine(points, GetColor(x));
         }

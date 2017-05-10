@@ -7,7 +7,7 @@ namespace Genetic_V8
 {
     public class FileReader
     {
-        public int[,] GetDataFromFile(string file, out int numberOfTowns, out int daysOfTrip, out int maxLength, out double[] profits)
+        public double[,] GetDataFromFile(string file, out int numberOfTowns, out int daysOfTrip, out int maxLength, out double[] profits)
         {
             List<Town> towns = new List<Town>();
             towns.Add(new Town(-1, -1, -1));
@@ -40,13 +40,14 @@ namespace Genetic_V8
                 towns[0].y = Parameters.Coordinates[0, 1];
                 towns[0].profit = 0;
             }
-            int[,] dist = new int[numberOfTowns + 1, numberOfTowns + 1];
+            double[,] dist = new double[numberOfTowns + 1, numberOfTowns + 1];
             profits = new double[numberOfTowns + 1];
             for (int i = 0; i < numberOfTowns + 1; i++)
             {
                 for (int j = 0; j < numberOfTowns + 1; j++)
                 {
-                    int distance = towns[i].calculateDistanceToOtherTown(towns[j]);
+                    //  int distance = towns[i].calculateDistanceToOtherTown(towns[j]);
+                    double distance = towns[i].GetGeoDistanceToPoint(towns[j]);
                     dist[i, j] = distance;
                     dist[j, i] = distance;
                 }

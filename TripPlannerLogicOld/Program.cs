@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Genetic_V8
@@ -16,7 +15,8 @@ namespace Genetic_V8
             Individual I = new Individual();
             Population oldPopulation, newPopulation;
             Reproduction breed = new Reproduction();
-            int populationSize = 100;
+            int populationSize = 40;
+            int numberOfGenerations = 40;
             double chance;
             double totalSumProfit = 0;
             double totalProfit = 0;
@@ -25,7 +25,7 @@ namespace Genetic_V8
             for (int z = 0; z < Parameters.daysOfTrip; z++)
             {
                 Parameters.bestOne = new Individual();
-                Parameters.bestOne.generateFixedIndividual(1, usedTowns);
+                Parameters.bestOne.generateFixedIndividual(0, usedTowns);
                 oldPopulation = new Population(populationSize);
                 for (int i = 0; i < populationSize; i++)
                 {
@@ -39,7 +39,7 @@ namespace Genetic_V8
                     I.generateFixedIndividual(startingTown, usedTowns);
                     oldPopulation.Add(I);
                 }
-                for (int generation = 0; generation < 60; generation++)
+                for (int generation = 0; generation < numberOfGenerations; generation++)
                 {
                     newPopulation = new Population(populationSize);
                     for (int i = 0; i < populationSize; i++)
@@ -91,13 +91,6 @@ namespace Genetic_V8
                 }
             }
             totalSumProfit += totalProfit;
-            StreamWriter sw = new StreamWriter("bestPath.txt");
-            foreach (Individual i in Parameters.solutions)
-            {
-                i.writeIndividualToFile(sw);
-            }
-
-            sw.Close();
         }
     }
 }

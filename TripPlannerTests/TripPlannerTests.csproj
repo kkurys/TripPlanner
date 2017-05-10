@@ -56,12 +56,6 @@
     <Compile Include="SortedSetsTests.cs" />
     <Compile Include="ValidatorTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TripPlannerLogic\TripPlannerLogic.csproj">
-      <Project>{d488cbc4-ba8d-4266-9c9d-73bc3d21650c}</Project>
-      <Name>TripPlannerLogic</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

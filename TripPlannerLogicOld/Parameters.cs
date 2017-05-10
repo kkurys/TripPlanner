@@ -8,7 +8,7 @@ namespace Genetic_V8
         public static int numberOfTowns;
         public static int maxLength;
         public static int daysOfTrip;
-        public static int[,] distances;
+        public static double[,] distances;
         public static double[] profits;
         public static double totalProfit, totalLength;
         public static Random rand;
@@ -23,18 +23,6 @@ namespace Genetic_V8
             solutions = new List<Individual>();
 
         }
-        public static void PrintDistances()
-        {
-
-            for (int i = 1; i <= 10; i++)
-            {
-                for (int j = 1; j <= 10; j++)
-                {
-                    Console.Write(distances[i, j] + " ");
-                }
-                Console.WriteLine();
-            }
-        }
 
         public static Notify Notify;
         public static void Init()
@@ -44,6 +32,10 @@ namespace Genetic_V8
             totalProfit = 0;
             totalLength = 0;
         }
+        public static int To = 2, Td = 4;
+        public static double Ptrc = 0.97, Pmv = 0.8, Pmt = 0.2;
     }
     public delegate void Notify(Individual route);
+
+
 }

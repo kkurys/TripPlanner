@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Genetic_V8
 {
@@ -27,11 +23,11 @@ namespace Genetic_V8
             // child.path.Contains(parent2.path[i])
             for (int i = point; i < parent2.path.Count - 1; i++)
             {
-                if (!wasUsed[parent2[i]] && child.length + Parameters.distances[child.path[child.Count-1], parent2.path[i]] + Parameters.distances[child.path[0], parent2.path[i]] <= 1.03 * Parameters.maxLength)
+                if (!wasUsed[parent2[i]] && child.length + Parameters.distances[child.path[child.Count - 1], parent2.path[i]] + Parameters.distances[child.path[0], parent2.path[i]] <= 1.03 * Parameters.maxLength)
                 {
                     child.path.Add(parent2.path[i]);
                     child.profit += Parameters.profits[parent2.path[i]];
-                    child.length += Parameters.distances[child.path[child.Count-1], child.path[child.Count-2]];
+                    child.length += Parameters.distances[child.path[child.Count - 1], child.path[child.Count - 2]];
                 }
             }
             child.path.Add(child.path[0]);
@@ -39,29 +35,29 @@ namespace Genetic_V8
             child.insertCapital();
 
             double chance = Parameters.rand.NextDouble();
-            if (chance > 0.999)
+            if (chance > Parameters.Ptrc)
             {
                 PathModifier.tryRemoveChange(child, usedTowns);
             }
-            else if (chance < 0.05 && child.length < Parameters.maxLength)
+            else if (chance < Parameters.Pmt)
             {
                 PathModifier.tryMutate(child, usedTowns);
             }
-            else if (chance < 0.03 && child.length < Parameters.maxLength)
-            {
-                PathModifier.tryExchanging(child, usedTowns);
-            }
-            else if (chance > 0.9965)
+            else if (chance > Parameters.Pmv)
             {
                 child.path = PathModifier.tryMoving(child.path, usedTowns);
+            }
+            else if (chance > 0.7 && chance < 0.72)
+            {
+                child.partialTwoOpt(Parameters.rand.Next(1, 5));
             }
             else if (chance > 0.6 && chance < 0.63)
             {
                 child.path = PathModifier.trySwapping(child.path, usedTowns);
             }
-            else if (chance > 0.7 && chance < 0.73)
+            else
             {
-                child.partialTwoOpt();
+                PathModifier.tryInverting(child);
             }
             child.evaluatePath();
             int similarityToParent1 = 0, similarityToParent2 = 0;
