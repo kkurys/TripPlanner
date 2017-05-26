@@ -8,9 +8,9 @@ namespace Genetic_V8
 {
     public class PathCalculator
     {
-        public int calculateDistance(List<int> path)
+        public double calculateDistance(List<int> path)
         {
-            int totalDist = 0;
+            double totalDist = 0;
             for (int i=0; i<path.Count-1; i++)
             {
                 totalDist += Parameters.distances[path[i], path[i + 1]];
