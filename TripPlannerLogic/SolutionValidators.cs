@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 
-namespace TripPlannerLogic
+namespace Genetic_V8
 {
     public class SolutionValidator
     {
         public bool SolutionHasDuplicates()
         {
             List<int> _usedTowns = new List<int>();
-            foreach (Route solution in Results.Solutions)
+            foreach (Individual solution in Parameters.solutions)
             {
-                for (int i = 1; i < solution.Points.Count - 1; i++)
+                for (int i = 0; i < solution.path.Count - 1; i++)
                 {
-                    if (_usedTowns.Contains(solution[i]))
+                    if (_usedTowns.Contains(solution[i]) && solution[i] != 0)
                     {
                         return true;
                     }
@@ -23,20 +23,20 @@ namespace TripPlannerLogic
         public bool SolutionLengthIsWrong()
         {
             double _totalLength = 0, _currentLength = 0;
-            foreach (Route solution in Results.Solutions)
+            foreach (Individual solution in Parameters.solutions)
             {
                 _currentLength = 0;
-                for (int i = 0; i < solution.Points.Count - 1; i++)
+                for (int i = 0; i < solution.path.Count - 1; i++)
                 {
-                    _currentLength += Params.Distances[solution[i], solution[i + 1]];
+                    _currentLength += Parameters.distances[solution[i], solution[i + 1]];
                 }
-                if (_currentLength > Params.MaxLength)
+                if (_currentLength > Parameters.maxLength)
                 {
                     return true;
                 }
                 _totalLength += _currentLength;
             }
-            if (_totalLength != Results.TotalLength)
+            if (_totalLength != Parameters.totalLength)
             {
                 return true;
             }
@@ -45,14 +45,14 @@ namespace TripPlannerLogic
         public bool SolutionTotalProfitIsWrong()
         {
             double _totalProfit = 0;
-            foreach (Route solution in Results.Solutions)
+            foreach (Individual solution in Parameters.solutions)
             {
-                for (int i = 0; i < solution.Points.Count; i++)
+                for (int i = 0; i < solution.path.Count - 1; i++)
                 {
-                    _totalProfit += Params.Profits[solution[i]];
+                    _totalProfit += Parameters.profits[solution[i]];
                 }
             }
-            if (_totalProfit != Results.TotalProfit)
+            if (_totalProfit != Parameters.totalProfit)
             {
                 return true;
             }

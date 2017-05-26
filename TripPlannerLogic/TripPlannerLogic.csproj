@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D488CBC4-BA8D-4266-9C9D-73BC3D21650C}</ProjectGuid>
+    <ProjectGuid>{17ADC27F-36F2-4B37-BF49-6315F7EAE2A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TripPlannerLogic</RootNamespace>
@@ -20,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,24 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomContainer.cs" />
+    <Compile Include="Container.cs" />
+    <Compile Include="ContainerForDuos.cs" />
+    <Compile Include="ContainerForInds.cs" />
     <Compile Include="FileReader.cs" />
-    <Compile Include="Params.cs" />
-    <Compile Include="PointValuePair.cs" />
-    <Compile Include="PointValuePairSortedSet.cs" />
-    <Compile Include="Results.cs" />
-    <Compile Include="Route.cs" />
-    <Compile Include="RouteCalculator.cs" />
-    <Compile Include="RouteCrossing.cs" />
-    <Compile Include="RouteGenerator.cs" />
+    <Compile Include="Individual.cs" />
+    <Compile Include="Parameters.cs" />
+    <Compile Include="PathCalculator.cs" />
+    <Compile Include="PathModifier.cs" />
+    <Compile Include="Population.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RouteModificator.cs" />
-    <Compile Include="RouteOptimizator.cs" />
-    <Compile Include="RoutePoint.cs" />
-    <Compile Include="RouteSet.cs" />
-    <Compile Include="RouteSortedSet.cs" />
+    <Compile Include="Reproduction.cs" />
     <Compile Include="SolutionValidators.cs" />
-    <Compile Include="TripPlanner.cs" />
+    <Compile Include="Town.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

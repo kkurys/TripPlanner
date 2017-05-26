@@ -25,7 +25,7 @@ namespace Genetic_V8
                 if (length > 1.3 * Parameters.maxLength)
                     return -1;
                 else
-                    return (profit * profit * profit / length) * (Parameters.maxLength * profit / length) * (Parameters.maxLength * profit / length) * (Parameters.maxLength / length) * (Parameters.maxLength / length);
+                    return (profit * profit * profit) * (Parameters.maxLength / length) * (Parameters.maxLength / length) * (Parameters.maxLength / length);
             }
         }
         public int this[int index]
@@ -59,7 +59,7 @@ namespace Genetic_V8
             PathCalculator calc = new PathCalculator();
 
             int pathDistance = 0;
-            for (int i = 1; i <= Parameters.numberOfTowns; i++)
+            for (int i = 0; i <= Parameters.numberOfTowns; i++)
             {
                 if (i == startingTown || usedTowns.Contains(i))
                 {
@@ -75,7 +75,7 @@ namespace Genetic_V8
             profit += Parameters.profits[startingTown];
             do
             {
-                int k = Parameters.rand.Next(2, 4);
+                int k = Parameters.rand.Next(Parameters.To, Parameters.Td);
                 bestTowns = new ContainerForDuos(k);
                 foreach (int i in availableTowns)
                 {
@@ -104,7 +104,7 @@ namespace Genetic_V8
             length = pathDistance;
             path = newPath;
             insertCapital();
-            partialTwoOpt();
+            partialTwoOpt(5);
             evaluatePath();
         }
         public void insertCapital()
@@ -126,7 +126,7 @@ namespace Genetic_V8
         {
             if (currentPathLength + Parameters.distances[previousTown, town] + Parameters.distances[town, finalTown] < Parameters.maxLength)
             {
-                return (Parameters.profits[town]) / Parameters.distances[previousTown, town];
+                return ((Parameters.profits[town]) * (Parameters.profits[town]) / Parameters.distances[previousTown, town]) * (currentPathLength + Parameters.distances[previousTown, town]) / Parameters.maxLength;
             }
             else
             {
@@ -136,63 +136,36 @@ namespace Genetic_V8
         }
         #endregion
         #region 2opt
-
-        public void twoOpt()
+        public void partialTwoOpt(int limit)
         {
-            bool startAgain = false;
-            PathCalculator calc = new PathCalculator();
             int iterations = 0;
+            int minChange = 0;
+            int minI = -1, minJ = -1;
             do
             {
-                int bestDistance = calc.calculateDistance(path);
-                startAgain = false;
-                for (int i = 1; i < path.Count - 1; i++)
+                minChange = 0;
+                for (int i = 1; i < path.Count - 3; i++)
                 {
-                    if (startAgain) break;
-                    for (int j = i + 1; j < path.Count - 2; j++)
+                    for (int j = i + 2; j < path.Count - 2; j++)
                     {
-                        int dist = Parameters.distances[path[i - 1], path[i]] + Parameters.distances[path[j], path[j + 1]] - Parameters.distances[path[i - 1], path[j]] - Parameters.distances[path[i], path[j + 1]];
-                        if (dist > 0)
+                        int dist = Parameters.distances[path[i], path[j]] + Parameters.distances[path[i + 1], path[j + 1]] - Parameters.distances[path[i], path[i + 1]] - Parameters.distances[path[j], path[j + 1]];
+                        if (dist < minChange)
                         {
-                            path = modifyPath(path, i, j);
-                            bestDistance -= dist;
-                            startAgain = true;
-                            break;
+                            minChange = dist;
+                            minI = i;
+                            minJ = j;
                         }
                     }
                 }
                 iterations++;
-            } while (startAgain);
-        }
-        public void partialTwoOpt()
-        {
-            bool startAgain = false;
-            PathCalculator calc = new PathCalculator();
-            int iterations = 0;
-            int bestDistance = length;
-            do
-            {
-
-                startAgain = false;
-                for (int i = 1; i < path.Count - 1; i++)
+                if (minChange < 0)
                 {
-                    if (startAgain) break;
-                    for (int j = i + 1; j < path.Count - 2; j++)
-                    {
-                        int dist = Parameters.distances[path[i - 1], path[i]] + Parameters.distances[path[j], path[j + 1]] - Parameters.distances[path[i - 1], path[j]] - Parameters.distances[path[i], path[j + 1]];
-                        if (dist > 0)
-                        {
-                            path = modifyPath(path, i, j);
-                            bestDistance -= dist;
-                            startAgain = true;
-                            break;
-                        }
-                    }
+                    path = modifyPath(path, minI, minJ);
+                    length += minChange;
                 }
-                iterations++;
-            } while (startAgain && iterations < 5);
+            } while (minChange < 0 && iterations < limit);
         }
-        /*
+
         public List<int> modifyPath(List<int> path, int lT, int rT)
         {
             List<int> modifiedPath = new List<int>(path);
@@ -207,7 +180,8 @@ namespace Genetic_V8
                 rT--;
             }
             return modifiedPath;
-        }*/
+        }
+        /*
         public List<int> modifyPath(List<int> path, int lT, int rT)
         {
             List<int> modifiedPath = new List<int>();
@@ -225,7 +199,7 @@ namespace Genetic_V8
             }
 
             return modifiedPath;
-        }
+        } */
         #endregion
         public void evaluatePath()
         {

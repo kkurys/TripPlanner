@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Genetic_V8
@@ -16,14 +15,18 @@ namespace Genetic_V8
             Individual I = new Individual();
             Population oldPopulation, newPopulation;
             Reproduction breed = new Reproduction();
-            int populationSize = 100;
+            int populationSize = 40;
+            int numberOfGenerations = 80;
             double chance;
             double totalSumProfit = 0;
             double totalProfit = 0;
+            bool timeOut = false;
             Parameters.solutions.Clear();
             usedTowns = new HashSet<int>();
             for (int z = 0; z < Parameters.daysOfTrip; z++)
             {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                timeOut = false;
                 Parameters.bestOne = new Individual();
                 Parameters.bestOne.generateFixedIndividual(1, usedTowns);
                 oldPopulation = new Population(populationSize);
@@ -39,14 +42,21 @@ namespace Genetic_V8
                     I.generateFixedIndividual(startingTown, usedTowns);
                     oldPopulation.Add(I);
                 }
-                for (int generation = 0; generation < 60; generation++)
+                for (int generation = 0; generation < numberOfGenerations; generation++)
                 {
+                    if (timeOut) break;
                     newPopulation = new Population(populationSize);
                     for (int i = 0; i < populationSize; i++)
                     {
+                        if (timeOut) break;
                         chance = Parameters.rand.NextDouble();
                         for (int j = i + 1; j < populationSize; j++)
                         {
+                            if (watch.ElapsedMilliseconds > 14990 / Parameters.daysOfTrip)
+                            {
+                                timeOut = true;
+                                break;
+                            }
                             if (chance < (1 - (i / 2 + j / 2) / populationSize))
                             {
                                 if (i < oldPopulation.Count && j < oldPopulation.Count)
@@ -91,13 +101,6 @@ namespace Genetic_V8
                 }
             }
             totalSumProfit += totalProfit;
-            StreamWriter sw = new StreamWriter("bestPath.txt");
-            foreach (Individual i in Parameters.solutions)
-            {
-                i.writeIndividualToFile(sw);
-            }
-
-            sw.Close();
         }
     }
 }

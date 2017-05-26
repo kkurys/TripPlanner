@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Genetic_V8
 {
@@ -15,6 +16,7 @@ namespace Genetic_V8
         public static Individual bestOne;
         public static List<Individual> solutions;
         public static double[,] Coordinates;
+        public static double DrawModifier;
         public static void GetParams(string filename)
         {
             FileReader fileIn = new FileReader();
@@ -22,18 +24,6 @@ namespace Genetic_V8
 
             solutions = new List<Individual>();
 
-        }
-        public static void PrintDistances()
-        {
-
-            for (int i = 1; i <= 10; i++)
-            {
-                for (int j = 1; j <= 10; j++)
-                {
-                    Console.Write(distances[i, j] + " ");
-                }
-                Console.WriteLine();
-            }
         }
 
         public static Notify Notify;
@@ -44,6 +34,24 @@ namespace Genetic_V8
             totalProfit = 0;
             totalLength = 0;
         }
+        public static int To = 2, Td = 4;
+        public static double Ptrc = 0.97, Pmv = 0.85, Pmt = 0.2;
+        public static void SaveToFile()
+        {
+            using (StreamWriter sw = new StreamWriter("solutions.txt"))
+            {
+                foreach (Individual i in solutions)
+                {
+                    sw.WriteLine(i.profit + " " + i.length);
+                    foreach (int x in i.path)
+                    {
+                        sw.Write(x + " ");
+                    }
+                }
+            }
+        }
     }
     public delegate void Notify(Individual route);
+
+
 }

@@ -40,14 +40,15 @@ namespace Genetic_V8
                 {
                     for (int x = 0; x < currentPath.Count - 1; x++)
                     {
-                        if (currentPathLength + Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]] <= Parameters.maxLength)
+                        int dist = Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]];
+                        if (currentPathLength + dist <= Parameters.maxLength)
                         {
 
-                            if (Parameters.profits[i] > bestPossibleGain)
+                            if (Parameters.profits[i] * Parameters.profits[i] * Parameters.profits[i] / (currentPathLength + dist) * Parameters.maxLength / (currentPathLength + dist) > bestPossibleGain)
                             {
 
                                 bestPossibleGainLengthInc = Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]];
-                                bestPossibleGain = Parameters.profits[i];
+                                bestPossibleGain = Parameters.profits[i] * Parameters.profits[i] * Parameters.profits[i] / (currentPathLength + dist) * Parameters.maxLength / (currentPathLength + dist);
                                 bestPossibleGainIndex = x;
                                 bestPossibleGainTown = i;
                             }
@@ -62,9 +63,23 @@ namespace Genetic_V8
                     currentPathLength = PO.calculateDistance(currentPath);
                 }
 
-            } while (bestPossibleGain != 0 && currentPathLength <= Parameters.maxLength && iterations < 1);
+            } while (bestPossibleGain != 0 && currentPathLength <= Parameters.maxLength && iterations < Parameters.rand.Next(1));
 
             return currentPath;
+        }
+
+        internal static void tryInverting(Individual child)
+        {
+            int startIdx = Parameters.rand.Next(2, child.Count - 2);
+            int side = Parameters.rand.Next();
+            if (side % 2 == 0)
+            {
+                child.path = child.modifyPath(child.path, startIdx, child.Count - 2);
+            }
+            else
+            {
+                child.path = child.modifyPath(child.path, 1, startIdx);
+            }
         }
         #endregion
         #region tryswapping
@@ -266,6 +281,7 @@ namespace Genetic_V8
             }
             int maxValueTown = 0;
             double maxValueProfit = 0;
+
             for (int i = 0; i < availableTowns.Count; i++)
             {
                 if (Parameters.profits[availableTowns[i]] > maxValueProfit)
@@ -274,8 +290,10 @@ namespace Genetic_V8
                     maxValueProfit = Parameters.profits[availableTowns[i]];
                 }
             }
+
             int z = Parameters.rand.Next(I.Count - 2) + 2;
 
+            //   I.path[z] = availableTowns[Parameters.rand.Next(availableTowns.Count - 1)];
             I.path[z] = availableTowns[maxValueTown];
 
         }

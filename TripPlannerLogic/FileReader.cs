@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-namespace TripPlannerLogic
+namespace Genetic_V8
 {
-    class FileReader
+    public class FileReader
     {
-        public double[,] GetDataFromFile(string file, out int numberOfPoints, out int daysOfTrip, out int maxLength, out double[] profits, out double[,] coordinates)
+        public int[,] GetDataFromFile(string file, out int numberOfTowns, out int daysOfTrip, out int maxLength, out double[] profits)
         {
-            List<RoutePoint> points = new List<RoutePoint>();
-            points.Add(new RoutePoint(-1, -1, -1));
+            List<Town> towns = new List<Town>();
+            towns.Add(new Town(-1, -1, -1));
+
             using (StreamReader inFile = new StreamReader(file))
             {
                 string[] t = inFile.ReadLine().Split(' ');
-                numberOfPoints = Convert.ToInt32(t[0]);
+                numberOfTowns = Convert.ToInt32(t[0]);
+                Parameters.Coordinates = new double[numberOfTowns + 1, 2];
                 daysOfTrip = Convert.ToInt32(t[1]);
                 maxLength = Convert.ToInt32(t[2]);
 
-                coordinates = new double[numberOfPoints + 1, 2];
-
-                for (int i = 0; i < numberOfPoints; i++)
+                for (int i = 0; i < numberOfTowns; i++)
                 {
                     t = inFile.ReadLine().Split(' ');
                     double x, y, p;
@@ -28,30 +28,29 @@ namespace TripPlannerLogic
                     double.TryParse(t[1], NumberStyles.Any, CultureInfo.InvariantCulture, out y);
                     double.TryParse(t[2], NumberStyles.Any, CultureInfo.InvariantCulture, out p);
 
-                    coordinates[i + 1, 0] = x;
-                    coordinates[i + 1, 1] = y;
+                    Parameters.Coordinates[i + 1, 0] = x;
+                    Parameters.Coordinates[i + 1, 1] = y;
 
-                    points.Add(new RoutePoint(x, y, p));
+                    towns.Add(new Town(x, y, p));
                 }
                 t = inFile.ReadLine().Split(' ');
-                double.TryParse(t[0], NumberStyles.Any, CultureInfo.InvariantCulture, out coordinates[0, 0]);
-                double.TryParse(t[1], NumberStyles.Any, CultureInfo.InvariantCulture, out coordinates[0, 1]);
-                points[0].X = coordinates[0, 0];
-                points[0].Y = coordinates[0, 1];
-                points[0].Profit = 0;
-
+                double.TryParse(t[0], NumberStyles.Any, CultureInfo.InvariantCulture, out Parameters.Coordinates[0, 0]);
+                double.TryParse(t[1], NumberStyles.Any, CultureInfo.InvariantCulture, out Parameters.Coordinates[0, 1]);
+                towns[0].x = Parameters.Coordinates[0, 0];
+                towns[0].y = Parameters.Coordinates[0, 1];
+                towns[0].profit = 0;
             }
-            double[,] dist = new double[numberOfPoints + 1, numberOfPoints + 1];
-            profits = new double[numberOfPoints + 1];
-            for (int i = 0; i < numberOfPoints + 1; i++)
+            int[,] dist = new int[numberOfTowns + 1, numberOfTowns + 1];
+            profits = new double[numberOfTowns + 1];
+            for (int i = 0; i < numberOfTowns + 1; i++)
             {
-                for (int j = 0; j < numberOfPoints + 1; j++)
+                for (int j = 0; j < numberOfTowns + 1; j++)
                 {
-                    int distance = points[i].GetEuclideanDistanceToPoint(points[j]);
+                    int distance = towns[i].calculateDistanceToOtherTown(towns[j]);
                     dist[i, j] = distance;
                     dist[j, i] = distance;
                 }
-                profits[i] = points[i].Profit;
+                profits[i] = towns[i].profit;
             }
             return dist;
         }

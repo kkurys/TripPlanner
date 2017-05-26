@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TripPlannerLogic")]
+[assembly: AssemblyTitle("TripPlannerLogicOld")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TripPlannerLogic")]
+[assembly: AssemblyProduct("TripPlannerLogicOld")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d488cbc4-ba8d-4266-9c9d-73bc3d21650c")]
+[assembly: Guid("17adc27f-36f2-4b37-bf49-6315f7eae2a8")]
 
 // Version information for an assembly consists of the following four values:
 //
