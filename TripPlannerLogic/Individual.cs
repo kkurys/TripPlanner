@@ -10,7 +10,7 @@ namespace Genetic_V8
         #region properties
         public List<int> path;
         public double profit { get; set; }
-        public int length { get; set; }
+        public double length { get; set; }
         public int Count
         {
             get
@@ -58,7 +58,7 @@ namespace Genetic_V8
             ContainerForDuos bestTowns = new ContainerForDuos(5);
             PathCalculator calc = new PathCalculator();
 
-            int pathDistance = 0;
+            double pathDistance = 0;
             for (int i = 0; i <= Parameters.numberOfTowns; i++)
             {
                 if (i == startingTown || usedTowns.Contains(i))
@@ -109,9 +109,9 @@ namespace Genetic_V8
         }
         public void insertCapital()
         {
-            if (path.Contains(0) || path.Count == 1) return;
+            if (path.Contains(0) || path.Count < 2) return;
             int bestInsertionPoint = -1;
-            int minimalDistanceGain = int.MaxValue;
+            double minimalDistanceGain = double.MaxValue;
             for (int i = 1; i <= path.Count - 2; i++)
             {
                 if (Parameters.distances[i - 1, i] - Parameters.distances[path[i - 1], 0] - Parameters.distances[0, i] < minimalDistanceGain)
@@ -120,9 +120,13 @@ namespace Genetic_V8
                     minimalDistanceGain = Parameters.distances[i - 1, i] - Parameters.distances[path[i - 1], 0] - Parameters.distances[0, i];
                 }
             }
-            path.Insert(bestInsertionPoint, 0);
+            if (bestInsertionPoint != -1)
+            {
+                path.Insert(bestInsertionPoint, 0);
+            }
+
         }
-        double calculateValue(int previousTown, int town, int currentPathLength, int finalTown)
+        double calculateValue(int previousTown, int town, double currentPathLength, int finalTown)
         {
             if (currentPathLength + Parameters.distances[previousTown, town] + Parameters.distances[town, finalTown] < Parameters.maxLength)
             {
@@ -139,7 +143,7 @@ namespace Genetic_V8
         public void partialTwoOpt(int limit)
         {
             int iterations = 0;
-            int minChange = 0;
+            double minChange = 0;
             int minI = -1, minJ = -1;
             do
             {
@@ -148,7 +152,7 @@ namespace Genetic_V8
                 {
                     for (int j = i + 2; j < path.Count - 2; j++)
                     {
-                        int dist = Parameters.distances[path[i], path[j]] + Parameters.distances[path[i + 1], path[j + 1]] - Parameters.distances[path[i], path[i + 1]] - Parameters.distances[path[j], path[j + 1]];
+                        double dist = Parameters.distances[path[i], path[j]] + Parameters.distances[path[i + 1], path[j + 1]] - Parameters.distances[path[i], path[i + 1]] - Parameters.distances[path[j], path[j + 1]];
                         if (dist < minChange)
                         {
                             minChange = dist;
@@ -213,7 +217,7 @@ namespace Genetic_V8
         }
         public void ModifyPathToBeginWithCapital()
         {
-            if (path[0] == 0) return;
+            if (path.Count < 3 || path[0] == 0) return;
             int i = 1;
             for (i = 1; i < path.Count; i++)
             {

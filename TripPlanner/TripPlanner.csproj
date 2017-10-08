@@ -29,15 +29,24 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Geolocation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Geolocation.1.1.1\lib\Geolocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Maps.MapControl.WPF">
+      <HintPath>C:\Program Files (x86)\Bing Maps WPF Control\V1\Libraries\Microsoft.Maps.MapControl.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -59,6 +68,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Business\Attraction.cs" />
+    <Compile Include="Business\AttractionWrapper.cs" />
+    <Compile Include="Business\Direction.cs" />
+    <Compile Include="Business\Hotel.cs" />
+    <Compile Include="Business\PointOfInterest.cs" />
+    <Compile Include="Core\Commands.cs" />
+    <Compile Include="Core\DataReader.cs" />
+    <Compile Include="Core\DistanceCalculator.cs" />
+    <Compile Include="Core\InputViewModel.cs" />
+    <Compile Include="Core\MapInteractivity.cs" />
+    <Compile Include="Core\DayTripPlan.cs" />
+    <Compile Include="Core\MapOptionsViewModel.cs" />
+    <Compile Include="Core\ProfitCalculator.cs" />
+    <Compile Include="Core\SettingsViewModel.cs" />
+    <Compile Include="Support\CategoryToHeaderConverter.cs" />
+    <Compile Include="Support\CategoryToIconConverter.cs" />
+    <Compile Include="Support\DayColors.cs" />
+    <Compile Include="Support\DayStatusToTextConverter.cs" />
+    <Compile Include="Support\DayToColorConverter.cs" />
+    <Compile Include="Support\HotelTypeToVisibilityConverter.cs" />
+    <Compile Include="Support\AttractionTypeToVisibilityConverter.cs" />
+    <Compile Include="Support\ValidIntRule.cs" />
+    <Compile Include="Service References\BingServices\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -90,17 +126,117 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Service References\BingServices\common.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\contracts.wsdl" />
+    <None Include="Service References\BingServices\contracts.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\GeocodeService.wsdl" />
+    <None Include="Service References\BingServices\GeocodeService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\GeocodeService1.wsdl" />
+    <None Include="Service References\BingServices\GeocodeService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\GeocodeService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\GeocodeService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\GeocodeService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\route.wsdl" />
+    <None Include="Service References\BingServices\route.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\service.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BingServices\TripPlanner.BingServices.GeocodeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BingServices\TripPlanner.BingServices.MajorRoutesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BingServices\TripPlanner.BingServices.RouteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\BingServices\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BingServices\GeocodeService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BingServices\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BingServices\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BingServices\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\church.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\house.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\fortress.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\mountains.png" />
+    <Resource Include="Icons\museum.png" />
+    <Resource Include="Icons\recreation.png" />
+    <Resource Include="Icons\sculpture.png" />
+    <Resource Include="Icons\sea.png" />
+    <Resource Include="Icons\trail.png" />
+    <Resource Include="Icons\tree.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\palace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\fair.png" />
+    <Resource Include="Icons\fountain.png" />
+    <Resource Include="Icons\hall.png" />
+    <Resource Include="Icons\other.png" />
+    <Resource Include="Icons\park.png" />
+    <Resource Include="Icons\party.png" />
+    <Resource Include="Icons\restaurant.png" />
+    <Resource Include="Icons\rocks.png" />
+    <Resource Include="Icons\science.png" />
+    <Resource Include="Icons\spa.png" />
+    <Resource Include="Icons\wall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\name.png" />
+    <Resource Include="Icons\star.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\selected.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

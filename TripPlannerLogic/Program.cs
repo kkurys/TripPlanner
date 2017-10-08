@@ -28,7 +28,6 @@ namespace Genetic_V8
                 var watch = System.Diagnostics.Stopwatch.StartNew();
                 timeOut = false;
                 Parameters.bestOne = new Individual();
-                Parameters.bestOne.generateFixedIndividual(1, usedTowns);
                 oldPopulation = new Population(populationSize);
                 for (int i = 0; i < populationSize; i++)
                 {
@@ -52,7 +51,7 @@ namespace Genetic_V8
                         chance = Parameters.rand.NextDouble();
                         for (int j = i + 1; j < populationSize; j++)
                         {
-                            if (watch.ElapsedMilliseconds > 14990 / Parameters.daysOfTrip)
+                            if (watch.ElapsedMilliseconds > (Parameters.ExecutionTime - 10) / Parameters.daysOfTrip)
                             {
                                 timeOut = true;
                                 break;
@@ -79,6 +78,11 @@ namespace Genetic_V8
                 }
                 Parameters.totalProfit += Parameters.bestOne.profit;
                 Parameters.totalLength += Parameters.bestOne.length;
+                if (Parameters.bestOne.path.Count == 0)
+                {
+                    Parameters.bestOne.path.Add(0);
+                    Parameters.bestOne.path.Add(0);
+                }
                 Parameters.bestOne.ModifyPathToBeginWithCapital();
                 Parameters.solutions.Add(Parameters.bestOne);
                 for (int k = 0; k < Parameters.bestOne.path.Count; k++)
@@ -101,6 +105,8 @@ namespace Genetic_V8
                 }
             }
             totalSumProfit += totalProfit;
+            Parameters.SaveToFile();
         }
+
     }
 }

@@ -3,79 +3,460 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:bing="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        xmlns:core="clr-namespace:TripPlanner.Core"
         xmlns:local="clr-namespace:TripPlanner"
+        xmlns:support="clr-namespace:TripPlanner.Support"
         mc:Ignorable="d"
-        Title="MainWindow" Width="810" Height="700">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Width="600">
-                <Canvas Name="canvas">
+        Title="TripPlanner" Width="1000" Height="820" Loaded="Window_Loaded"
+        >
+    <Window.CommandBindings>
+        <CommandBinding Command="local:Commands.ChangeVisibility" Executed="ChangeVisibility_Executed"   />
+        <CommandBinding Command="local:Commands.GeneratePlan" Executed="GeneratePlan_Executed" CanExecute="GeneratePlan_CanExecute"/>
+        <CommandBinding Command="local:Commands.ClearSolutions" Executed="ClearSolutions_Executed" CanExecute="ClearSolutions_CanExecute"/>
+        <CommandBinding Command="local:Commands.SaveSettings" Executed="SaveSettings_Executed" CanExecute="SaveSettings_CanExecute"/>
+    </Window.CommandBindings>
+    <Window.Resources>
+        <support:CategoryToIconConverter x:Key="CategoryToIconConverter" />
+        <support:DayToColorConverter x:Key="DayToColorConverter" />
+        <support:AttractionTypeToVisibilityConverter x:Key="AttractionTypeToVisibilityConverter" />
+        <support:CategoryToHeaderConverter x:Key="CategoryToHeaderConverter" />
+        <support:HotelTypeToVisibilityConverter x:Key="HotelTypeToVisibilityConverter" />
+        <support:DayStatusToTextConverter x:Key="DayStatusToTextConverter"/>
+        <Style x:Key="boldBigText" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontFamily" Value="Calibri" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style x:Key="bigText" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
 
-                </Canvas>
+        <Style x:Key="blackTextBlock" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style x:Key="blackTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style x:Key="blackLabel" TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style x:Key="nonHighlight" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" Margin="2">
+                            <ContentPresenter>
+                            </ContentPresenter>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FF67BD53" Offset="0" />
+                                            <GradientStop Color="#FF196607" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="false">
+                                <Setter TargetName="Border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FF0080FF" Offset="0" />
+                                            <GradientStop Color="#FF02498F" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="TripDataTemplate">
+            <Grid Name="TripDataGrid">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="2" FontWeight="Bold" FontSize="16" VerticalAlignment="Bottom" Text="{Binding Path=Header}" TextWrapping="Wrap" Foreground="White" />
+                        <TextBlock Margin="2" FontSize="14" VerticalAlignment="Bottom" Text="Kolor: " TextWrapping="Wrap" Foreground="White" />
+                        <Rectangle Margin="2" Width="16" Height="16" Fill="{Binding Day, Converter={StaticResource DayToColorConverter}}" Stroke='{Binding Day, Converter={StaticResource DayToColorConverter}}' Opacity="1" StrokeThickness="5"></Rectangle>
+                   </StackPanel>
+                    <StackPanel Grid.ColumnSpan="2" Grid.Row="1" Margin="2" Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBlock FontSize="14" Text="{Binding Path=VisitedPlaces}" Foreground="White" />
+                        <TextBlock FontSize="14" Text="{Binding Path=Profit}" Foreground="White" />
+                        <Button Content="{Binding Visible, Converter={StaticResource DayStatusToTextConverter}}" Command="local:Commands.ChangeVisibility" CommandParameter="{Binding}"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
-            <Grid Grid.Column="1">
+        </DataTemplate>
+        <DataTemplate x:Key="DayDataTemplate">
+            <Grid Name="DayTemplateGrid">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                   <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top">
+                        <TextBlock FontSize="16" Text="{Binding Path=Name}" Foreground="White" />
+                    </StackPanel>
+                    <Image Grid.Column="0" Margin="0,0,5,0" Grid.RowSpan="2" MaxHeight="24"
+                             Source="{Binding Path=Category, Converter={StaticResource CategoryToIconConverter}}" ToolTip="{Binding Path=Category}"/>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="RouteTemplate">
+            <Ellipse Width="12" Height="12" Fill="Red" Opacity="0.8" 
+                     bing:MapLayer.Position="{Binding Location}" 
+                     bing:MapLayer.PositionOrigin="Center"
+                     Tag="{Binding}"
+                     MouseEnter="Route_MouseEnter" 
+                     MouseLeave="Route_MouseLeave"/>
+        </DataTemplate>
+    </Window.Resources>
+    <TabControl>
+        <TabItem Header="APP" DataContext="RouteViewModel">
+            <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="1.75*"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Name="InputGrid" Validation.Error="InputValidationError">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <GroupBox Header="Hotel" Margin="4">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <ComboBox Grid.Row="1" Name="CBHotels" SelectionChanged="ChangeActiveHotel" Margin="5" Text="Wybierz hotel"></ComboBox>
+                                </Grid>
+
+                            </GroupBox>
+                           
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <GroupBox Header="Wycieczka" Margin="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Content="Ilość dni: " Grid.Row="0" Grid.Column="0"></Label>
+                                    <TextBox Name="TBDays" Margin="5" Grid.Column="1">
+                                        <TextBox.Text>
+                                            <Binding Path="DaysOfTrip" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <support:ValidIntRule></support:ValidIntRule>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Label Content="Limit kilometrów: " Grid.Row="1" Grid.Column="0"></Label>
+                                    <TextBox Name="TBLimit" Margin="5" Grid.Row="1" Grid.Column="1">
+                                        <TextBox.Text>
+                                            <Binding Path="Limit" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <support:ValidIntRule></support:ValidIntRule>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                                        <Button Name="BTNStartPlanner" Command="local:Commands.GeneratePlan" Margin="5">ZAPLANUJ WYCIECZKĘ</Button>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <GroupBox Header="Widok" Name="GBDisplay" Margin="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Label Content="Rysowanie tras: " Grid.Row="0" Grid.Column="0"></Label>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+                                        <RadioButton IsChecked="True" Checked="LinesChecked" Margin="3">Linie</RadioButton>
+                                        <RadioButton Name="RBRoads" IsEnabled="{Binding RoadsReady}" Margin="3" Checked="RoadsChecked">Drogi</RadioButton>
+                                    </StackPanel>
+                                    <Label Content="Widoczność hoteli: " Grid.Row="1" Grid.Column="0"></Label>
+                                    <CheckBox IsChecked="{Binding DisplayHotels}" Grid.Row="1" Grid.Column="1" Margin="3">Widoczne</CheckBox>
+                                    <Button Grid.Row="2" Grid.ColumnSpan="2" Command="local:Commands.ClearSolutions">WYCZYŚĆ TRASY</Button>
+                                </Grid>
+
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <GroupBox Header="Czasy działania" Margin="4" MouseDown="ToggleTimes">
+                                <Grid Visibility="Collapsed" Name="GBTimes">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Czas wykonania algorytmu: " ></Label>
+                                    <Label Grid.Row="0" Grid.Column="1" Name="LBAlgorithmExecutionTime" HorizontalContentAlignment="Center">0s</Label>
+                                    <Label Grid.Row="1" Grid.Column="0" Content="Czas pobierania mapy: " ></Label>
+                                    <Label Grid.Row="1" Grid.Column="1" Name="LBMapLoadingExecutionTime" HorizontalContentAlignment="Center">0s</Label>
+                                </Grid>
+
+
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <bing:Map Mode="AerialWithLabels" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AnimationLevel="Full"
+                              Center="53.5635400, 20.9951900" ZoomLevel="7" Margin="10 10 10 10" Name="BingMap"
+                  core:MapInteractivity.RouteResult="{Binding RouteResult}"
+                  core:MapInteractivity.RouteLineLayer="{Binding ElementName=RouteLineLayer}"
+                  CredentialsProvider="{StaticResource MyCredentials}" >
+
+                            <bing:MapLayer x:Name="RouteLineLayer" />
+
+                            <bing:MapLayer>
+                                <bing:MapItemsControl Name="MapDirections"
+                                      ItemTemplate="{StaticResource RouteTemplate}"/>
+                            </bing:MapLayer>
+
+                            <bing:MapLayer x:Name="ContentPopupLayer">
+                                <GroupBox x:Name="ContentPopup" Visibility="Collapsed" Header="{Binding Category, Converter={StaticResource CategoryToHeaderConverter}}">
+                                    <Grid >
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel   Orientation="Horizontal" MinWidth="60" >
+                                            <Image Source="{Binding Category, Converter={StaticResource CategoryToIconConverter}}" MaxHeight="18" MaxWidth="18" Margin="2"></Image>
+                                            <Label x:Name="PopupCategoryName" Margin="2" FontSize="12" VerticalAlignment="Center" FontWeight="Bold" Content="{Binding Category}" Foreground="Black" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1"  Orientation="Vertical" MinWidth="60" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/name.png" MaxHeight="18" MaxWidth="18" Margin="2"></Image>
+                                                <Label x:Name="PopupName" Margin="2" FontSize="12" VerticalAlignment="Center" FontWeight="Bold" Content="{Binding Name}" Foreground="Black" />
+                                            </StackPanel>
+                                           <StackPanel Orientation="Horizontal" Visibility="{Binding Path=DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource AttractionTypeToVisibilityConverter}}">
+                                                <Image Source="/Icons/star.png" MaxHeight="18" MaxWidth="18" Margin="2"></Image>
+                                                <Label x:Name="PopupLBProfit" Margin="2" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" Content="Ocena"  Foreground="Black"  />
+                                                <Label x:Name="PopupProfit" Margin="2" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" Content="{Binding Profit}" Foreground="Black" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Visibility="{Binding Path=DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource HotelTypeToVisibilityConverter}}">
+                                                <Image Source="/Icons/selected.png" MaxHeight="18" MaxWidth="18" Margin="2"></Image>
+                                                <Label x:Name="PopupSelected" Margin="2" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold" Content="Aktualnie wybrany"  Foreground="Black"  />
+                                             </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </GroupBox>
+                              
+                            </bing:MapLayer>
+
+                            <bing:MapLayer Name="PushPinLayer">
+
+                            </bing:MapLayer>
+                        </bing:Map>
+
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Row="1" DataContext="{Binding ElementName=LBTripDays, Path=SelectedItem}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <TextBlock Text="Dni wycieczki" FontSize="15"/>
+                        </GroupBox.Header>
+                        <ListBox
+                            Name="LBTripDays"
+                            ItemTemplate="{StaticResource TripDataTemplate}"
+                            ItemContainerStyle="{StaticResource nonHighlight}"
+                            HorizontalContentAlignment="Stretch">
+                        </ListBox>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1">
+                        <GroupBox.Header>
+                            <TextBlock Text="Plan wycieczki" FontSize="15"/>
+                        </GroupBox.Header>
+                        <ListBox Name="LBTripPlan" 
+                                 ItemsSource="{Binding Attractions}" 
+                                 ItemTemplate="{StaticResource DayDataTemplate}"
+                                  ItemContainerStyle="{StaticResource nonHighlight}"
+                                 MouseDoubleClick="ShowLocation">
+
+                        </ListBox>
+                    </GroupBox>
+
+                </Grid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="BENCHMARK">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="Wyniki" >
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="Sumaryczny profit:"></Label>
+                            <Label Grid.Row="0" Grid.Column="1" Name="LBProfit"></Label>
+                            <Label Grid.Row="1" Grid.Column="0" Content="Sumaryczna długość:"></Label>
+                            <Label Grid.Row="1" Grid.Column="1" Name="LBLength"></Label>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Header="Trasy">
+                        <Label Name="LBRoutes"></Label>
+                    </GroupBox>
+                    <GroupBox Header="Walidacja" Grid.Row="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="Duplikaty: "></Label>
+                            <Label Grid.Row="0" Grid.Column="1" Name="LBDuplicatesStatus"></Label>
+                            <Label Grid.Row="1" Grid.Column="0" Content="Długość: "></Label>
+                            <Label Grid.Row="1" Grid.Column="1" Name="LBLengthStatus"></Label>
+                            <Label Grid.Row="2" Grid.Column="0" Content="Profit: "></Label>
+                            <Label Grid.Row="3" Grid.Column="1" Name="LBProfitStatus"></Label>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="3" Header="Czas działania">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Czas działania: "></Label>
+                            <Label Grid.Column="1" Name="LBExecutionTime"></Label>
+                        </Grid>
+
+                    </GroupBox>
+                    <GroupBox Grid.Row="4" Header="Benchmark">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Name="LBFile"></Label>
+                            <Button Grid.Row="1" Click="LoadFile" Content="WCZYTAJ PLIK"  />
+                            <Button Grid.Row="2" Name="BTNStartBenchmark" Click="StartBenchmark" Content="START" IsEnabled="False" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <Grid Grid.Column="1" >
+                    <Canvas Name="canvas" Margin="10" Height="720" Width="800">
+
+                    </Canvas>
+                </Grid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Parametry algorytmu">
+            <Grid>
+                <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Row="0" Grid.Column="0">
-                    <Label>Total Profit:</Label>
-                </Grid>
-                <Grid Grid.Row="0" Grid.Column="1">
-                    <Label Name="LBProfit"></Label>
-                </Grid>
-                <Grid Grid.Row="1" Grid.Column="0">
-                    <Label>Total Length:</Label>
-                </Grid>
-                <Grid Grid.Row="1" Grid.Column="1">
-                    <Label Name="LBLength"></Label>
-                </Grid>
-                <Grid Grid.Row="2" Grid.ColumnSpan="2">
-                    <Label Name="LBRoutes"></Label>
-                </Grid>
-                <Grid Grid.Row="3" >
-                    <Label Content="Duplicates: "></Label>
-                </Grid>
-                <Grid Grid.Row="3" Grid.Column="1">
-                    <Label Name="LBDuplicatesStatus"></Label>
-                </Grid>
-                <Grid Grid.Row="4" >
-                    <Label Content="Length: "></Label>
-                </Grid>
-                <Grid Grid.Row="4" Grid.Column="1">
-                    <Label Name="LBLengthStatus"></Label>
-                </Grid>
-                <Grid Grid.Row="5" >
-                    <Label Content="Profit: "></Label>
-                </Grid>
-                <Grid Grid.Row="5" Grid.Column="1">
-                    <Label Name="LBProfitStatus"></Label>
-                </Grid>
-                <Grid Grid.Row="6" Grid.ColumnSpan="2">
-                    <Button Click="RestartAlgorithm" Content="START"  />
-                </Grid>
+                <GroupBox Grid.Column="0" Header="Parametry" Name="GBSettings">
+                    <Grid Name="SettingsInputGrid" Validation.Error="SettingsInputValidationError">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="1" Content="Stara wartość"></Label>
+                        <Label Grid.Row="0" Grid.Column="2" Content="Nowa wartość"></Label>
+                        
+                        <Label Grid.Row="1" Grid.Column="0" Content="Czas działania"></Label>
+                        <Label Grid.Row="1" Grid.Column="1" Content="{Binding OldExecutionTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></Label>
+                        <TextBox Grid.Row="1" Grid.Column="2" >
+                            <TextBox.Text>
+                                <Binding Path="ExecutionTime" Mode="TwoWay" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <support:ValidIntRule></support:ValidIntRule>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Button Grid.Row="2" Grid.ColumnSpan="3" Content="ZAPISZ" Name="BTNSaveSettings" Command="local:Commands.SaveSettings"></Button>
+                    </Grid>
+                </GroupBox>
             </Grid>
-        </Grid>
-        <Grid Grid.Row="1">
-            <TextBlock TextWrapping="WrapWithOverflow" Name="LBFullRoutes"></TextBlock>
-        </Grid>
-    </Grid>
+        </TabItem>
+    </TabControl>
+
 
 </Window>

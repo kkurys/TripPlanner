@@ -18,7 +18,7 @@ namespace Genetic_V8
                 availableTowns.Remove(k);
             }
             PathCalculator PO = new PathCalculator();
-            int currentPathLength = PO.calculateDistance(currentPath);
+            double currentPathLength = PO.calculateDistance(currentPath);
             double currentProfit = 0;
             foreach (int i in currentPath)
             {
@@ -28,7 +28,7 @@ namespace Genetic_V8
             double bestPossibleGain = 0;
             int bestPossibleGainIndex = -1;
             int bestPossibleGainTown = -1;
-            int bestPossibleGainLengthInc = 0;
+            double bestPossibleGainLengthInc = 0;
             int iterations = 0;
             do
             {
@@ -40,7 +40,7 @@ namespace Genetic_V8
                 {
                     for (int x = 0; x < currentPath.Count - 1; x++)
                     {
-                        int dist = Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]];
+                        double dist = Parameters.distances[currentPath[x], i] + Parameters.distances[i, currentPath[x + 1]] - Parameters.distances[currentPath[x], currentPath[x + 1]];
                         if (currentPathLength + dist <= Parameters.maxLength)
                         {
 
@@ -70,6 +70,7 @@ namespace Genetic_V8
 
         internal static void tryInverting(Individual child)
         {
+            if (child.Count < 4) return;
             int startIdx = Parameters.rand.Next(2, child.Count - 2);
             int side = Parameters.rand.Next();
             if (side % 2 == 0)
@@ -94,7 +95,7 @@ namespace Genetic_V8
             PathCalculator PO = new PathCalculator();
             List<int> added = new List<int>();
             List<int> removed = new List<int>();
-            int currentPathLength = PO.calculateDistance(currentPath);
+            double currentPathLength = PO.calculateDistance(currentPath);
             double currentProfit = 0;
 
             foreach (int i in currentPath)
@@ -184,14 +185,14 @@ namespace Genetic_V8
             PathCalculator calc = new PathCalculator();
             double bestPathProfit;
             double newProfit = 0;
-            int bestPathDist;
+            double bestPathDist;
             evaluatePath(bestPath, out bestPathDist, out bestPathProfit);
             for (int i = 1; i < bestPath.Count - 2; i++)
             {
                 for (int j = 1; j < bestPath.Count - 3; j++)
                 {
                     if (i == j) continue;
-                    int newDist = bestPathDist;
+                    double newDist = bestPathDist;
                     newProfit = 0;
 
                     if (j == i + 1)
@@ -271,6 +272,7 @@ namespace Genetic_V8
         public static void tryMutate(Individual I, HashSet<int> usedTowns)
         {
             List<int> availableTowns = new List<int>(aT);
+
             foreach (int i in I.path)
             {
                 availableTowns.Remove(i);
@@ -279,6 +281,11 @@ namespace Genetic_V8
             {
                 availableTowns.Remove(k);
             }
+            if (availableTowns.Count == 0)
+            {
+                return;
+            }
+
             int maxValueTown = 0;
             double maxValueProfit = 0;
 
@@ -297,7 +304,7 @@ namespace Genetic_V8
             I.path[z] = availableTowns[maxValueTown];
 
         }
-        public static void evaluatePath(List<int> path, out int length, out double profit)
+        public static void evaluatePath(List<int> path, out double length, out double profit)
         {
             length = 0;
             profit = 0;

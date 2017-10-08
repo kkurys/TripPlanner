@@ -30,7 +30,7 @@ namespace Genetic_V8
         {
             population.Add(p);
             averagePopulationFitness = (averagePopulationFitness + p.fitness) / Count;
-            if (((p.profit > Parameters.bestOne.profit && p.length <= Parameters.maxLength) || (p.profit == Parameters.bestOne.profit && p.length < Parameters.maxLength)) && p.path.Contains(0))
+            if (((p.profit > Parameters.bestOne.profit && p.length <= Parameters.maxLength) || (p.profit == Parameters.bestOne.profit && p.length <= Parameters.maxLength)) && p.path.Contains(0))
             {
                 Parameters.bestOne = p;
             }

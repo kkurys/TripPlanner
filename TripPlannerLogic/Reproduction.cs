@@ -47,15 +47,20 @@ namespace Genetic_V8
             {
                 child.path = PathModifier.tryMoving(child.path, usedTowns);
             }
+            /*
+            else if (chance < 0.015)
+            {
+                PathModifier.tryExchanging(child, usedTowns);
+            }*/
             else if (chance > 0.7 && chance < 0.72)
             {
                 child.partialTwoOpt(Parameters.rand.Next(1, 5));
             }
-            else if (chance > 0.6 && chance < 0.615)
+            else if (chance > 0.6 && chance < 0.64)
             {
                 child.path = PathModifier.trySwapping(child.path, usedTowns);
             }
-            else if (chance > 0.4)
+            else
             {
                 PathModifier.tryInverting(child);
             }
